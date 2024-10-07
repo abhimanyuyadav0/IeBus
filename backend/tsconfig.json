@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "./build",
+    //"rootDir": "./src", // Change this to the correct path of your source files
+    "strict": true,
+    "noImplicitAny": true,
+    "baseUrl": "./src",
+    "skipLibCheck": true
+  },
+  "lib": [
+    "es2015"
+  ],
+  "include": [
+    "src/**/*",
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

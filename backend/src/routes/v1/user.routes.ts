@@ -1,0 +1,29 @@
+import { Router } from 'express';
+import {
+   deleteById,
+   getAll,
+   getById,
+   loginUser,
+   registerUser,
+   updateById,
+} from '../../controllers/users.controller';
+import requireFieldsMiddleware from '../../middlewares/requireFieldsMiddleware';
+const router = Router();
+// GET /Users/
+router.get('/', getAll);
+
+// GET /Users/:id
+router.get('/:id', getById);
+
+// POST / registerUsers
+router.post('/', requireFieldsMiddleware(['email', 'password']), registerUser);
+
+// POST /loginUsers
+router.post('/login', loginUser);
+
+// PATCH /Users/:id
+router.patch('/:id', updateById);
+
+router.delete('/:id', deleteById);
+
+export { router as usersRoute };
