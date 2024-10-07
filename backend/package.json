@@ -8,9 +8,9 @@
     "build": "npm run clean && tsc",
     "start:prod": "cross-env NODE_ENV=production node build/index.js",
     "start:staging": "cross-env NODE_ENV=staging node build/index.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon src/index.ts",
-    "start": "nodemon  build/index.js",
-    "dev": "npm run start"
+    "start:dev": "cross-env NODE_ENV=development node src/index.ts",
+    "deploy": "npm run build && gcloud app deploy",
+    "start": "node build/index.js"
   },
   "engines": {
     "node": ">=18.20.1"
