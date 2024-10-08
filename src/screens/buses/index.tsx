@@ -9,12 +9,15 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
-import { ROUTES } from '../../constants/routes';
-import { Card, Grid, GridItem } from '../../component/library';
-import { useQuery } from '@tanstack/react-query';
-import { getBuses } from '../../api/services/buses';
-import { getLocations } from '../../api/services/locations';
+import {ROUTES} from '../../constants/routes';
+import {Card, Grid, GridItem} from '../../component/library';
+import {useQuery} from '@tanstack/react-query';
+import {getBuses} from '../../api/services/buses';
+import {getLocations} from '../../api/services/locations';
+import {COLORS} from '../../constants/colors';
+import {formatDateTime} from '../../utils/dateFormater';
 
 const BusScreen = ({navigation}: any) => {
   const [fromLocation, setFromLocation] = useState('');
@@ -22,34 +25,48 @@ const BusScreen = ({navigation}: any) => {
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
-  // Fetch buses using TanStack Query
-  const {
-    data: busData,
-    isLoading: loadingBuses
-  } = useQuery<any>({
+  // Fetch buses and locations using TanStack Query
+  const {data: busData, isLoading: loadingBuses} = useQuery<any>({
     queryKey: ['buses'],
     queryFn: getBuses,
   });
 
-  const {
-    data: allLocations,
-    isLoading: loadingLocations
-  } = useQuery<any>({
-    queryKey: ['orders'],
+  const {data: allLocations, isLoading: loadingLocations} = useQuery<any>({
+    queryKey: ['locations'],
     queryFn: getLocations,
   });
+
   // Loading state for both queries
   if (loadingBuses || loadingLocations) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
+  const locationMap = allLocations.locations.reduce(
+    (acc: any, location: any) => {
+      acc[location._id] = location.name;
+      return acc;
+    },
+    {},
+  );
+
   const searchBuses = () => {
     if (!busData?.buses) return [];
+
     return busData.buses.filter((bus: any) => {
-  console.log(bus)
-      const fromMatch = bus.from.toLowerCase() === fromLocation.toLowerCase();
-      const toMatch = bus.to.toLowerCase() === toLocation.toLowerCase();
-      const isIntermediateStop = bus.stops.some((stop:any) => stop.toLowerCase() === toLocation.toLowerCase());
+      const fromMatch =
+        !fromLocation ||
+        locationMap[bus.from]
+          ?.toLowerCase()
+          .includes(fromLocation.toLowerCase()); // Use includes for partial match
+
+      const toMatch =
+        !toLocation ||
+        locationMap[bus.to]?.toLowerCase().includes(toLocation.toLowerCase()); // Use includes for partial match
+
+      const isIntermediateStop = bus.stops.some(
+        (stop: any) =>
+          locationMap[stop]?.toLowerCase().includes(toLocation.toLowerCase()), // Use includes for partial match in stops
+      );
 
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
     });
@@ -57,8 +74,10 @@ const BusScreen = ({navigation}: any) => {
 
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
-      .filter((location:any) => location.name.toLowerCase().includes(input.toLowerCase()))
-      .map((location:any) => location.name);
+      .filter((location: any) =>
+        location.name.toLowerCase().includes(input.toLowerCase()),
+      )
+      .map((location: any) => location.name);
 
     if (type === 'from') {
       setFromSuggestions(filtered);
@@ -102,8 +121,9 @@ const BusScreen = ({navigation}: any) => {
           <FlatList
             data={fromSuggestions}
             keyExtractor={item => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'from')}>
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => handleSuggestionSelect(item, 'from')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -121,8 +141,9 @@ const BusScreen = ({navigation}: any) => {
           <FlatList
             data={toSuggestions}
             keyExtractor={item => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'to')}>
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => handleSuggestionSelect(item, 'to')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -133,25 +154,48 @@ const BusScreen = ({navigation}: any) => {
         <Button title="Search" onPress={searchBuses} />
       </View>
 
-      <Grid>
-        {filteredBuses.map((bus: any, index: number) => (
-          <GridItem key={index} span={6}>
-            <Card title={bus.name} onPress={() => {}}>
-              <View style={styles.busItem}>
-                <Text>Departure: {bus.departure}</Text>
-                <Text>Arrival: {bus.arrival}</Text>
-                <Text>Price: {bus.price}</Text>
-                <TouchableNativeFeedback
-                  onPress={() => {
-                    navigation.navigate(ROUTES.SEATSELECTION, {bus});
-                  }}>
-                  <Text style={styles.bookButton}>Book Now</Text>
-                </TouchableNativeFeedback>
-              </View>
-            </Card>
-          </GridItem>
-        ))}
-      </Grid>
+      <ScrollView>
+        {filteredBuses.length > 0 ? (
+          <Grid>
+            {filteredBuses.map((bus: any, index: number) => {
+              const formattedDeparture = formatDateTime(bus.departure);
+              const formattedArrival = formatDateTime(bus.arrival);
+              return (
+                <GridItem key={index} span={12}>
+                  <Card title={bus.name} onPress={() => {}}>
+                    <View style={styles.busItem}>
+                      <Text>
+                        Departure: {formattedDeparture.date}{' '}
+                        {formattedDeparture.time}
+                      </Text>
+                      <Text>
+                        Arrival: {formattedArrival.date} {formattedArrival.time}
+                      </Text>
+                      <Text>Price: {bus.price}</Text>
+                      <Text>From: {locationMap[bus.from]}</Text>
+                      <Text>To: {locationMap[bus.to]}</Text>
+                      <Text>
+                        Stops:{' '}
+                        {bus.stops
+                          .map((stop: any) => locationMap[stop])
+                          .join(', ')}
+                      </Text>
+                      <TouchableNativeFeedback
+                        onPress={() => {
+                          navigation.navigate(ROUTES.BOOKING, {bus});
+                        }}>
+                        <Text style={styles.bookButton}>Book Now</Text>
+                      </TouchableNativeFeedback>
+                    </View>
+                  </Card>
+                </GridItem>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Text style={styles.header}>No Bus found</Text>
+        )}
+      </ScrollView>
     </View>
   );
 };

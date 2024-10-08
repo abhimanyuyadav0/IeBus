@@ -8,7 +8,7 @@ import UserScreen from '../screens/users';
 import BusScreen from '../screens/buses';
 import BookingScreen from '../screens/booking';
 import OrdersScreen from '../screens/orders';
-import SeatSelectionScreen from '../screens/seatSelection';
+import SeatSelectionScreen from '../screens/booking/seatSelection';
 import PaymentScreen from '../screens/payment';
 import ConfirmationScreen from '../screens/confirmPayment';
 
@@ -58,11 +58,6 @@ const AppRouter = () => {
           name={ROUTES.ORDERS}
           component={OrdersScreen}
           options={{title: 'Your Orders'}}
-        />
-        <Stack.Screen
-          name={ROUTES.SEATSELECTION}
-          component={SeatSelectionScreen}
-          options={{title: 'Select your seat'}}
         />
         <Stack.Screen
           name={ROUTES.PAYMENT}

@@ -8,6 +8,7 @@ type ButtonProps = {
   color?: 'primary' | 'secondary' | 'success' | 'danger'; // Define the available colors
   size?: 'small' | 'normal' | 'large'; // Define available sizes
   fullWidth?: boolean;
+  disabled?:boolean;
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -16,6 +17,7 @@ const CustomButton: React.FC<ButtonProps> = ({
   color = 'primary',
   size = 'normal',
   fullWidth = false,
+  disabled
 }) => {
   return (
     <TouchableOpacity
@@ -25,7 +27,9 @@ const CustomButton: React.FC<ButtonProps> = ({
         styles[size], // Size styles
         fullWidth && {width: '100%'}, // Apply 100% width if fullWidth is true
       ]}
-      onPress={onPress}>
+      onPress={onPress}
+      disabled={disabled}
+      >
       <Text style={styles.buttonText}>{title}</Text>
     </TouchableOpacity>
   );

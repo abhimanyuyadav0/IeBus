@@ -6,7 +6,6 @@ export const ROUTES = {
   BUS: 'Bus',
   ORDERS: 'Orders',
   BOOKING: 'Booking',
-  SEATSELECTION: 'SeatSelection',
   PAYMENT: 'Payment',
   CONFIRMATION:"Confirmation"
 };

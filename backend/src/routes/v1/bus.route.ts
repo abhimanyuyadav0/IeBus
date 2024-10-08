@@ -5,6 +5,7 @@ import {
   getById,
   updateById,
   deleteById,
+  bookBusSeats,
 } from '../../controllers/bus.controller';
 
 const router = Router();
@@ -23,5 +24,8 @@ router.patch('/:id', updateById);
 
 // DELETE /buses/:id
 router.delete('/:id', deleteById);
+
+// PATCH /buses/:id/book
+router.patch('/:id/book', bookBusSeats);
 
 export { router as busRoute };
