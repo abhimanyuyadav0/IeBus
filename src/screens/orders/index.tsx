@@ -11,6 +11,7 @@ import { Card, Grid, GridItem } from '../../component/library';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getOrders, deleteOrder } from '../../api/services/orders';
 import {CustomButton} from '../../component';
+import { COLORS } from '../../constants/colors';
 
 interface Order {
   id: string;

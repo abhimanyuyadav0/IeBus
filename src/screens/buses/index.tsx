@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import { ROUTES } from '../../constants/routes';
 import { Card, Grid, GridItem } from '../../component/library';
-import { useQuery } from '@tanstack/react-query'; // Import useQuery from TanStack
-import { getBuses } from '../../api/services/buses'; // Import the API function
+import { useQuery } from '@tanstack/react-query';
+import { getBuses } from '../../api/services/buses';
 import { getLocations } from '../../api/services/locations';
 
 const BusScreen = ({ navigation }: any) => {
@@ -22,35 +22,34 @@ const BusScreen = ({ navigation }: any) => {
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
-  // Example of provided locations
-  const allLocations = {
-    locations: [
-      { name: 'Mumbai' },
-      { name: 'Pune' },
-      { name: 'Nashik' },
-      { name: 'Lonavala' },
-      { name: 'Shambhaji Nagar' },
-    ],
-  };
-
   // Fetch buses using TanStack Query
   const {
-    data,
-    isLoading,
-    refetch,
+    data: busData,
+    isLoading: loadingBuses
   } = useQuery<any>({
-    queryKey: ['orders'],
+    queryKey: ['buses'],
     queryFn: getBuses,
   });
 
+  const {
+    data: allLocations,
+    isLoading: loadingLocations
+  } = useQuery<any>({
+    queryKey: ['orders'],
+    queryFn: getLocations,
+  });
+  // Loading state for both queries
+  if (loadingBuses || loadingLocations) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   const searchBuses = () => {
-    if (!data?.buses) return [];
-    return data.buses.filter((bus: any) => {
+    if (!busData?.buses) return [];
+    return busData.buses.filter((bus: any) => {
+  console.log(bus)
       const fromMatch = bus.from.toLowerCase() === fromLocation.toLowerCase();
       const toMatch = bus.to.toLowerCase() === toLocation.toLowerCase();
-      const isIntermediateStop = bus.stops.some(
-        (stop: any) => stop.toLowerCase() === toLocation.toLowerCase(),
-      );
+      const isIntermediateStop = bus.stops.some((stop:any) => stop.toLowerCase() === toLocation.toLowerCase());
 
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
     });
@@ -58,10 +57,8 @@ const BusScreen = ({ navigation }: any) => {
 
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
-      ?.filter((location) =>
-        location.name.toLowerCase().includes(input.toLowerCase())
-      )
-      .map((location) => location.name);
+      .filter((location:any) => location.name.toLowerCase().includes(input.toLowerCase()))
+      .map((location:any) => location.name);
 
     if (type === 'from') {
       setFromSuggestions(filtered);
@@ -90,12 +87,7 @@ const BusScreen = ({ navigation }: any) => {
     }
   };
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   const filteredBuses = searchBuses();
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Bus List</Text>
@@ -109,11 +101,9 @@ const BusScreen = ({ navigation }: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={(item) => item}
+            keyExtractor={item => item}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'from')}
-              >
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'from')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -130,11 +120,9 @@ const BusScreen = ({ navigation }: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={(item) => item}
+            keyExtractor={item => item}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'to')}
-              >
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'to')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -144,6 +132,7 @@ const BusScreen = ({ navigation }: any) => {
 
         <Button title="Search" onPress={searchBuses} />
       </View>
+
       <Grid>
         {filteredBuses.map((bus: any, index: number) => (
           <GridItem key={index} span={6}>
@@ -204,6 +193,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
+    position: 'absolute',
+    zIndex: 1,
+    width: '100%',
   },
   suggestionItem: {
     padding: 10,

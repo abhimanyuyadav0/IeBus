@@ -3,7 +3,7 @@ import apiEndPoint from '../handlers/endPoint';
 
 // Create an Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:5000/v1/',
+  baseURL: 'https://elite-mix-437808-u8.de.r.appspot.com/v1/',
   timeout: 10000, // Optional timeout of 10 seconds
   headers: {
     'Content-Type': 'application/json',
