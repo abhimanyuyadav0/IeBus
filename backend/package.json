@@ -13,7 +13,7 @@
     "start": "node build/index.js"
   },
   "engines": {
-    "node": ">=18.20.1"
+    "node": "20.10.0"
   },
   "author": "abhimanyu",
   "license": "ISC",

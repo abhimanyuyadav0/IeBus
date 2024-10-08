@@ -17,51 +17,51 @@ const getOrders = async () => {
   try {
     const { data } = await api.get(apiEndPoint.order);
     return data;
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error fetching orders:', error.message || 'Unknown error');
     throw error;
   }
 };
 
 // Create User
-const createOrder = async (payload) => {
+const createOrder = async (payload:any) => {
   try {
     const { data } = await api.post(apiEndPoint.order, payload);
     return data;
-  } catch (error) {
+  } catch (error:any) {
     console.error('Error creating order:', error.message || 'Unknown error');
     throw error;
   }
 };
 
 // Update Order
-const updateOrder = async (id, payload) => {
+const updateOrder = async (id:any, payload:any) => {
   try {
     const { data } = await api.patch(`${apiEndPoint.order}/${id}`, payload);
     return data;
-  } catch (error) {
+  } catch (error:any) {
     console.error(`Error updating order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }
 };
 
 // Delete Order
-const deleteOrder = async (id) => {
+const deleteOrder = async (id:any) => {
   try {
     const { data } = await api.delete(`${apiEndPoint.order}/${id}`);
     return data;
-  } catch (error) {
+  } catch (error:any) {
     console.error(`Error deleting order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }
 };
 
 // Get Order by ID
-const getOrderById = async (id) => {
+const getOrderById = async (id:any) => {
   try {
     const { data } = await api.get(`${apiEndPoint.order}/${id}`);
     return data;
-  } catch (error) {
+  } catch (error:any) {
     console.error(`Error fetching order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }

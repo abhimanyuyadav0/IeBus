@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,58 +6,57 @@ import {
   FlatList,
   TouchableNativeFeedback,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-import {Card, Grid, GridItem} from '../../component/library';
-import {COLORS} from '../../constants/colors';
-import BackButton from '../../component/backButton';
-import {ROUTES} from '../../constants/routes';
-import {useQuery} from '@tanstack/react-query';
-import {getOrders} from '../../api/services/orders';
+import { Card, Grid, GridItem } from '../../component/library';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getOrders, deleteOrder } from '../../api/services/orders';
 
-const OrdersScreen = ({navigation}: any) => {
-  const [bookedTickets, setBookedTickets] = useState<any[]>([]);
+interface Order {
+  id: string;
+  name: string;
+  busName: string;
+  departure: string;
+  arrival: string;
+  price: string;
+}
+
+const OrdersScreen = ({ navigation }: any) => {
   const {
     data,
-    isPending: loading,
-    isError,
+    isLoading: loading, // `isPending` is not a valid property of useQuery, changed to `isLoading`
     refetch,
-  } = useQuery({
+  } = useQuery<Order[]>({
     queryKey: ['orders'],
     queryFn: getOrders,
   });
-  useEffect(() => {
-    const fetchBookedTickets = () => {
-      const tickets = [
-        {
-          id: '1',
-          name: 'John Doe',
-          busName: 'Bus A',
-          departure: '10:00 AM',
-          arrival: '2:00 PM',
-          price: '$20',
-        },
-        {
-          id: '2',
-          name: 'Jane Smith',
-          busName: 'Bus B',
-          departure: '1:00 PM',
-          arrival: '5:00 PM',
-          price: '$25',
-        },
-      ];
-      setBookedTickets(tickets);
-    };
 
-    fetchBookedTickets();
-  }, []);
-
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteOrder(id),  // Equivalent to the queryFn pattern
+    onSuccess: () => {
+      Alert.alert('Success', 'Order deleted successfully');
+      refetch(); // Refresh the data after deletion
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error?.message || 'An error occurred');
+    },
+  });
   const handleDelete = (id: string) => {
-    const updatedTickets = bookedTickets.filter(ticket => ticket.id !== id);
-    setBookedTickets(updatedTickets);
-    Alert.alert('Ticket Deleted', 'The ticket has been deleted successfully.');
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this order?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deleteMutation.mutate(id),
+        },
+      ],
+    );
   };
-  console.log('first::', data);
-  const renderItem = ({item}: any) => (
+
+  const renderItem = ({ item }: { item: Order }) => (
     <Grid>
       <GridItem span={12}>
         <Card title={item.name}>
@@ -85,15 +84,21 @@ const OrdersScreen = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Booked Tickets</Text>
-      {bookedTickets.length > 0 ? (
-        <FlatList
-          data={bookedTickets}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-        />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <Text>No booked tickets available.</Text>
+        <View>
+          <Text style={styles.header}>Booked Tickets</Text>
+          {data?.length ? (
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          ) : (
+            <Text>No booked tickets available.</Text>
+          )}
+        </View>
       )}
     </View>
   );
@@ -111,10 +116,6 @@ const styles = StyleSheet.create({
   },
   ticketWrapper: {
     padding: 5,
-  },
-  ticketHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   deleteButton: {
     marginTop: 10,
