@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,80 +8,60 @@ import {
   Button,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import {ROUTES} from '../../constants/routes';
-import {Card, Grid, GridItem} from '../../component/library';
+import { ROUTES } from '../../constants/routes';
+import { Card, Grid, GridItem } from '../../component/library';
+import { useQuery } from '@tanstack/react-query'; // Import useQuery from TanStack
+import { getBuses } from '../../api/services/buses'; // Import the API function
+import { getLocations } from '../../api/services/locations';
 
-// Sample bus data
-const busesData = [
-  {
-    id: 1,
-    name: 'Bus A',
-    departure: '10:00 AM',
-    arrival: '2:00 PM',
-    price: '$20',
-    from: 'Mumbai',
-    to: 'Pune',
-    stops: ['Lonavala', 'Shambhaji Nagar'],
-  },
-  {
-    id: 2,
-    name: 'Bus B',
-    departure: '1:00 PM',
-    arrival: '5:00 PM',
-    price: '$25',
-    from: 'Pune',
-    to: 'Mumbai',
-    stops: ['Shambhaji Nagar'],
-  },
-  {
-    id: 3,
-    name: 'Bus C',
-    departure: '3:00 PM',
-    arrival: '7:00 PM',
-    price: '$15',
-    from: 'Mumbai',
-    to: 'Nashik',
-    stops: [], // No intermediate stops
-  },
-];
-
-// Locations list for suggestions
-const allLocations = [
-  'Mumbai',
-  'Pune',
-  'Nashik',
-  'Lonavala',
-  'Shambhaji Nagar',
-];
-
-const BusScreen = ({navigation}: any) => {
+const BusScreen = ({ navigation }: any) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
-  const [filteredBuses, setFilteredBuses] = useState(busesData);
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
-  // Handle search for buses
+  // Example of provided locations
+  const allLocations = {
+    locations: [
+      { name: 'Mumbai' },
+      { name: 'Pune' },
+      { name: 'Nashik' },
+      { name: 'Lonavala' },
+      { name: 'Shambhaji Nagar' },
+    ],
+  };
+
+  // Fetch buses using TanStack Query
+  const {
+    data,
+    isLoading,
+    refetch,
+  } = useQuery<any>({
+    queryKey: ['orders'],
+    queryFn: getBuses,
+  });
+
   const searchBuses = () => {
-    const results = busesData.filter(bus => {
+    if (!data?.buses) return [];
+    return data.buses.filter((bus: any) => {
       const fromMatch = bus.from.toLowerCase() === fromLocation.toLowerCase();
       const toMatch = bus.to.toLowerCase() === toLocation.toLowerCase();
       const isIntermediateStop = bus.stops.some(
-        stop => stop.toLowerCase() === toLocation.toLowerCase(),
+        (stop: any) => stop.toLowerCase() === toLocation.toLowerCase(),
       );
 
-      // Show bus if user is searching for direct routes or an intermediate stop
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
     });
-    setFilteredBuses(results);
   };
 
-  // Filter suggestions based on input
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
-    const filtered = allLocations.filter(location =>
-      location.toLowerCase().includes(input.toLowerCase()),
-    );
+    const filtered = allLocations.locations
+      ?.filter((location) =>
+        location.name.toLowerCase().includes(input.toLowerCase())
+      )
+      .map((location) => location.name);
 
     if (type === 'from') {
       setFromSuggestions(filtered);
@@ -110,6 +90,12 @@ const BusScreen = ({navigation}: any) => {
     }
   };
 
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  const filteredBuses = searchBuses();
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Bus List</Text>
@@ -123,10 +109,11 @@ const BusScreen = ({navigation}: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'from')}>
+                onPress={() => handleSuggestionSelect(item, 'from')}
+              >
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -143,10 +130,11 @@ const BusScreen = ({navigation}: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'to')}>
+                onPress={() => handleSuggestionSelect(item, 'to')}
+              >
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -166,8 +154,9 @@ const BusScreen = ({navigation}: any) => {
                 <Text>Price: {bus.price}</Text>
                 <TouchableNativeFeedback
                   onPress={() => {
-                    navigation.navigate(ROUTES.SEATSELECTION, {bus});
-                  }}>
+                    navigation.navigate(ROUTES.SEATSELECTION, { bus });
+                  }}
+                >
                   <Text style={styles.bookButton}>Book Now</Text>
                 </TouchableNativeFeedback>
               </View>
