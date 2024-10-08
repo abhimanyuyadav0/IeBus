@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getBuses } from '../../api/services/buses';
 import { getLocations } from '../../api/services/locations';
 
-const BusScreen = ({ navigation }: any) => {
+const BusScreen = ({navigation}: any) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
@@ -143,9 +143,8 @@ const BusScreen = ({ navigation }: any) => {
                 <Text>Price: {bus.price}</Text>
                 <TouchableNativeFeedback
                   onPress={() => {
-                    navigation.navigate(ROUTES.SEATSELECTION, { bus });
-                  }}
-                >
+                    navigation.navigate(ROUTES.SEATSELECTION, {bus});
+                  }}>
                   <Text style={styles.bookButton}>Book Now</Text>
                 </TouchableNativeFeedback>
               </View>
@@ -172,24 +171,24 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: COLORS.secondary,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
   },
   busItem: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.background.secondary,
     padding: 5,
     borderRadius: 5,
   },
   bookButton: {
-    color: 'green',
+    color: COLORS.success,
     marginTop: 10,
   },
   suggestionsContainer: {
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
+    backgroundColor: COLORS.background.primary,
+    borderColor: COLORS.background.secondary,
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: COLORS.background.secondary,
   },
 });
 
