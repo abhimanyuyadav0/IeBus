@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,13 +10,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { ROUTES } from '../../constants/routes';
-import { Card, Grid, GridItem } from '../../component/library';
-import { useQuery } from '@tanstack/react-query'; // Import useQuery from TanStack
-import { getBuses } from '../../api/services/buses'; // Import the API function
-import { getLocations } from '../../api/services/locations';
+import {ROUTES} from '../../constants/routes';
+import {Card, Grid, GridItem} from '../../component/library';
+import {useQuery} from '@tanstack/react-query'; // Import useQuery from TanStack
+import {getBuses} from '../../api/services/buses'; // Import the API function
+import {getLocations} from '../../api/services/locations';
+import {COLORS} from '../../constants/colors';
 
-const BusScreen = ({ navigation }: any) => {
+const BusScreen = ({navigation}: any) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
@@ -25,20 +26,16 @@ const BusScreen = ({ navigation }: any) => {
   // Example of provided locations
   const allLocations = {
     locations: [
-      { name: 'Mumbai' },
-      { name: 'Pune' },
-      { name: 'Nashik' },
-      { name: 'Lonavala' },
-      { name: 'Shambhaji Nagar' },
+      {name: 'Mumbai'},
+      {name: 'Pune'},
+      {name: 'Nashik'},
+      {name: 'Lonavala'},
+      {name: 'Shambhaji Nagar'},
     ],
   };
 
   // Fetch buses using TanStack Query
-  const {
-    data,
-    isLoading,
-    refetch,
-  } = useQuery<any>({
+  const {data, isLoading, refetch} = useQuery<any>({
     queryKey: ['orders'],
     queryFn: getBuses,
   });
@@ -58,10 +55,10 @@ const BusScreen = ({ navigation }: any) => {
 
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
-      ?.filter((location) =>
-        location.name.toLowerCase().includes(input.toLowerCase())
+      ?.filter(location =>
+        location.name.toLowerCase().includes(input.toLowerCase()),
       )
-      .map((location) => location.name);
+      .map(location => location.name);
 
     if (type === 'from') {
       setFromSuggestions(filtered);
@@ -109,11 +106,10 @@ const BusScreen = ({ navigation }: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
+            keyExtractor={item => item}
+            renderItem={({item}) => (
               <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'from')}
-              >
+                onPress={() => handleSuggestionSelect(item, 'from')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -130,11 +126,10 @@ const BusScreen = ({ navigation }: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
+            keyExtractor={item => item}
+            renderItem={({item}) => (
               <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'to')}
-              >
+                onPress={() => handleSuggestionSelect(item, 'to')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -154,9 +149,8 @@ const BusScreen = ({ navigation }: any) => {
                 <Text>Price: {bus.price}</Text>
                 <TouchableNativeFeedback
                   onPress={() => {
-                    navigation.navigate(ROUTES.SEATSELECTION, { bus });
-                  }}
-                >
+                    navigation.navigate(ROUTES.SEATSELECTION, {bus});
+                  }}>
                   <Text style={styles.bookButton}>Book Now</Text>
                 </TouchableNativeFeedback>
               </View>
@@ -183,24 +177,24 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: COLORS.secondary,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
   },
   busItem: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.background.secondary,
     padding: 5,
     borderRadius: 5,
   },
   bookButton: {
-    color: 'green',
+    color: COLORS.success,
     marginTop: 10,
   },
   suggestionsContainer: {
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
+    backgroundColor: COLORS.background.primary,
+    borderColor: COLORS.background.secondary,
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
@@ -208,7 +202,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: COLORS.background.secondary,
   },
 });
 
