@@ -1,39 +1,32 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, Button, Alert} from 'react-native';
-import {ROUTES} from '../../constants/routes';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { ROUTES } from '../../constants/routes';
 import { CustomTextInput } from '../../component';
 
-const PaymentScreen = ({route, navigation}: any) => {
-  const {selectedSeats, bus} = route.params;
+const PaymentScreen = ({ route, navigation }: any) => {
+  const { selectedSeats, bus, totalPrice, passengers } = route.params; // Get passengers from params
   const [formData, setFormData] = useState({
     cardNumber: '',
     cardHolder: '',
     expiryDate: '',
     cvv: '',
   });
-  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    // Calculate total price based on selected seats
-    const seatData = [
-      {id: 1, price: 20},
-      {id: 2, price: 20},
-      {id: 3, price: 20},
-      {id: 4, price: 25},
-      {id: 5, price: 25},
-      {id: 6, price: 25},
-    ];
-
-    const price = selectedSeats.reduce((total: number, seatId: number) => {
-      const seat = seatData.find(s => s.id === seatId);
-      return total + (seat ? seat.price : 0);
-    }, 0);
-
-    setTotalPrice(price);
-  }, [selectedSeats]);
+    // You can also handle total price calculation here if needed
+  }, [selectedSeats, bus]);
 
   const handlePayment = () => {
-    navigation.replace(ROUTES.CONFIRMATION, {selectedSeats, bus});
+    if (!formData.cardNumber || !formData.cardHolder || !formData.expiryDate || !formData.cvv) {
+      Alert.alert('Error', 'Please fill in all payment details.');
+      return;
+    }
+
+    // Implement the payment processing logic here
+    // Alert.alert('Payment Successful', `Total Price: $${totalPrice}`);
+    
+    // Navigate to the confirmation screen
+    navigation.replace(ROUTES.CONFIRMATION, { selectedSeats, bus, totalPrice, passengers }); // Pass passengers to confirmation
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -45,7 +38,7 @@ const PaymentScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Payment for {bus?.name}</Text>
+      <Text style={styles.header}>Payment for {bus?.name || 'Bus'}</Text>
       <Text style={styles.totalText}>Total Price: ${totalPrice}</Text>
 
       <CustomTextInput
@@ -54,6 +47,7 @@ const PaymentScreen = ({route, navigation}: any) => {
         placeholder="Card Number"
         onChangeText={value => handleInputChange('cardNumber', value)}
         keyboardType="numeric"
+        maxLength={16}
       />
       <CustomTextInput
         label="Card Holder Name"
@@ -66,6 +60,7 @@ const PaymentScreen = ({route, navigation}: any) => {
         value={formData.expiryDate}
         placeholder="Expiry Date (MM/YY)"
         onChangeText={value => handleInputChange('expiryDate', value)}
+        maxLength={5}
       />
       <CustomTextInput
         label="CVV"
@@ -74,6 +69,7 @@ const PaymentScreen = ({route, navigation}: any) => {
         onChangeText={value => handleInputChange('cvv', value)}
         keyboardType="numeric"
         secureTextEntry
+        maxLength={3}
       />
 
       <Button title="Pay Now" onPress={handlePayment} />

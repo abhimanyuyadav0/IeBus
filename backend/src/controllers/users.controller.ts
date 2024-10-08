@@ -73,8 +73,6 @@ export const getAll = async (
   try {
     const {type, city} = req.query;
     const users = await getAllUsers();
-    console.log('testing get');
-
     res.json(users);
   } catch (error) {
     next(error);

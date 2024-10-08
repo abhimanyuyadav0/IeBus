@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,58 +7,58 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import {ROUTES} from '../../constants/routes';
-import {CustomButton} from '../../component';
+import { ROUTES } from '../../constants/routes';
+import { CustomButton } from '../../component';
 import SeatSelectionScreen from './seatSelection';
-import {Card} from '../../component/library';
+import { Card } from '../../component/library';
 
-const BookingScreen = ({navigation, route}: any) => {
-  const {bus} = route.params;
-  const [formData, setFormData] = useState([]);  // Array to hold passenger details
-  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);  // To hold selected seats
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);  // To handle editing of existing passengers
-  const [newPassenger, setNewPassenger] = useState<any>(null);  // Temporary state for adding a new passenger
-console.log(bus)
+const BookingScreen = ({ navigation, route }: any) => {
+  const { bus } = route.params;
+  const [formData, setFormData] = useState<any[]>([]);
+  const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [newPassenger, setNewPassenger] = useState<{ name: string; contact: string } | null>(null);
+
   // Handle input changes for new passenger
   const handleNewPassengerInputChange = (name: string, value: string) => {
-    setNewPassenger({...newPassenger, [name]: value});
+    setNewPassenger((prev) => ({ ...prev, [name]: value }));
   };
 
   // Add passenger to formData array
   const saveNewPassenger = () => {
-    if (!newPassenger || !newPassenger.name || !newPassenger.contact) {
+    if (!newPassenger?.name || !newPassenger.contact) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    setFormData([...formData, newPassenger]);  // Add new passenger to the list
+    setFormData((prev) => [...prev, newPassenger]);
     setNewPassenger(null);  // Reset form
   };
 
   // Delete passenger by index
   const deletePassenger = (index: number) => {
-    const updatedData = formData.filter((_, i) => i !== index);
-    setFormData(updatedData);
-    // Adjust the selectedSeats array if there are fewer passengers
-    if (selectedSeats.length > updatedData.length) {
-      setSelectedSeats(selectedSeats.slice(0, updatedData.length));
+    setFormData((prev) => prev.filter((_, i) => i !== index));
+    if (selectedSeats.length > formData.length) {
+      setSelectedSeats(selectedSeats.slice(0, formData.length - 1));
     }
   };
 
   // Start editing an existing passenger
   const startEditing = (index: number) => {
     setEditingIndex(index);
-    setNewPassenger({...formData[index]});  // Populate the form with passenger data
+    setNewPassenger({ ...formData[index] });  // Populate the form with passenger data
   };
 
   // Save changes made to an existing passenger
   const saveChanges = (index: number) => {
-    if (!newPassenger || !newPassenger.name || !newPassenger.contact) {
+    if (!newPassenger?.name || !newPassenger.contact) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
-    const updatedData = [...formData];
-    updatedData[index] = newPassenger;  // Apply changes to the passenger data
-    setFormData(updatedData);
+    setFormData((prev) => {
+      const updatedData = [...prev];
+      updatedData[index] = newPassenger;
+      return updatedData;
+    });
     setEditingIndex(null);  // Exit edit mode
     setNewPassenger(null);  // Reset form
   };
@@ -66,7 +66,7 @@ console.log(bus)
   // Cancel editing or adding a new passenger
   const cancelEditing = () => {
     setEditingIndex(null);
-    setNewPassenger(null);  // Reset form without saving
+    setNewPassenger(null);  // Reset form
   };
 
   // Get total price for selected seats
@@ -76,7 +76,20 @@ console.log(bus)
       return total + (seat ? seat.price : 0);
     }, 0);
   };
-
+  const assignRandomSeats = () => {
+    const availableSeats = bus.seats.filter((seat) => !selectedSeats.includes(seat.id) && !seat.booked);
+    const requiredSeats = formData.length - selectedSeats.length;
+  
+    for (let i = 0; i < requiredSeats; i++) {
+      if (availableSeats.length > 0) {
+        const randomSeatIndex = Math.floor(Math.random() * availableSeats.length);
+        const randomSeat = availableSeats[randomSeatIndex];
+        setSelectedSeats((prev) => [...prev, randomSeat.id]);
+        availableSeats.splice(randomSeatIndex, 1); // Remove the assigned seat from available seats
+      }
+    }
+  };
+  
   // Proceed to the payment screen
   const handleProceedToPayment = () => {
     const totalPrice = getTotalPrice();
@@ -86,7 +99,7 @@ console.log(bus)
     }
 
     if (selectedSeats.length < formData.length) {
-      assignRandomSeats();
+      assignRandomSeats();  // Ensure selected seats match passenger count
     }
 
     navigation.navigate(ROUTES.PAYMENT, {
@@ -146,9 +159,8 @@ console.log(bus)
         </Card>
       ))}
 
-      {/* Conditionally show the New Passenger form if not in edit mode */}
       {editingIndex === null && newPassenger === null && (
-        <CustomButton title="Add Passenger" onPress={() => setNewPassenger({name: '', contact: ''})} />
+        <CustomButton title="Add Passenger" onPress={() => setNewPassenger({ name: '', contact: '' })} />
       )}
 
       {editingIndex === null && newPassenger !== null && (
@@ -179,7 +191,7 @@ console.log(bus)
       )}
 
       <SeatSelectionScreen
-        route={{params: {bus}}}
+        route={{ params: { bus } }}
         selectedSeats={selectedSeats}
         setSelectedSeats={setSelectedSeats}
       />
@@ -189,7 +201,7 @@ console.log(bus)
         <CustomButton
           title="Proceed to Payment"
           onPress={handleProceedToPayment}
-          disabled={selectedSeats.length === 0}
+          disabled={formData.length === 0}
         />
       </View>
     </View>

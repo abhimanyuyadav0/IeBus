@@ -8,6 +8,7 @@ interface CustomTextInputProps {
   onChangeText: (text: string) => void;
   keyboardType?: 'default' | 'numeric' | 'email-address'; // Optional, default is 'default'
   secureTextEntry?: boolean; // Optional for password fields
+  maxLength?:number
 }
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
@@ -17,6 +18,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   onChangeText,
   keyboardType = 'default',
   secureTextEntry = false,
+  maxLength
 }) => {
   return (
     <View style={styles.container}>
@@ -28,6 +30,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
+        maxLength={maxLength}
       />
     </View>
   );

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,27 +11,27 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import {ROUTES} from '../../constants/routes';
-import {Card, Grid, GridItem} from '../../component/library';
-import {useQuery} from '@tanstack/react-query';
-import {getBuses} from '../../api/services/buses';
-import {getLocations} from '../../api/services/locations';
-import {COLORS} from '../../constants/colors';
-import {formatDateTime} from '../../utils/dateFormater';
+import { ROUTES } from '../../constants/routes';
+import { Card, Grid, GridItem } from '../../component/library';
+import { useQuery } from '@tanstack/react-query';
+import { getBuses } from '../../api/services/buses';
+import { getLocations } from '../../api/services/locations';
+import { COLORS } from '../../constants/colors';
+import { formatDateTime } from '../../utils/dateFormater';
 
-const BusScreen = ({navigation}: any) => {
+const BusScreen = ({ navigation }: any) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
   // Fetch buses and locations using TanStack Query
-  const {data: busData, isLoading: loadingBuses} = useQuery<any>({
+  const { data: busData, isLoading: loadingBuses } = useQuery<any>({
     queryKey: ['buses'],
     queryFn: getBuses,
   });
 
-  const {data: allLocations, isLoading: loadingLocations} = useQuery<any>({
+  const { data: allLocations, isLoading: loadingLocations } = useQuery<any>({
     queryKey: ['locations'],
     queryFn: getLocations,
   });
@@ -46,7 +46,7 @@ const BusScreen = ({navigation}: any) => {
       acc[location._id] = location.name;
       return acc;
     },
-    {},
+    {}
   );
 
   const searchBuses = () => {
@@ -55,17 +55,14 @@ const BusScreen = ({navigation}: any) => {
     return busData.buses.filter((bus: any) => {
       const fromMatch =
         !fromLocation ||
-        locationMap[bus.from]
-          ?.toLowerCase()
-          .includes(fromLocation.toLowerCase()); // Use includes for partial match
+        locationMap[bus.from._id]?.toLowerCase().includes(fromLocation.toLowerCase());
 
       const toMatch =
         !toLocation ||
-        locationMap[bus.to]?.toLowerCase().includes(toLocation.toLowerCase()); // Use includes for partial match
+        locationMap[bus.to._id]?.toLowerCase().includes(toLocation.toLowerCase());
 
-      const isIntermediateStop = bus.stops.some(
-        (stop: any) =>
-          locationMap[stop]?.toLowerCase().includes(toLocation.toLowerCase()), // Use includes for partial match in stops
+      const isIntermediateStop = bus.stops.some((stop: any) =>
+        locationMap[stop._id]?.toLowerCase().includes(toLocation.toLowerCase())
       );
 
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
@@ -75,7 +72,7 @@ const BusScreen = ({navigation}: any) => {
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
       .filter((location: any) =>
-        location.name.toLowerCase().includes(input.toLowerCase()),
+        location.name.toLowerCase().includes(input.toLowerCase())
       )
       .map((location: any) => location.name);
 
@@ -107,6 +104,7 @@ const BusScreen = ({navigation}: any) => {
   };
 
   const filteredBuses = searchBuses();
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Bus List</Text>
@@ -120,10 +118,9 @@ const BusScreen = ({navigation}: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'from')}>
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'from')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -140,10 +137,9 @@ const BusScreen = ({navigation}: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'to')}>
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'to')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -165,25 +161,22 @@ const BusScreen = ({navigation}: any) => {
                   <Card title={bus.name} onPress={() => {}}>
                     <View style={styles.busItem}>
                       <Text>
-                        Departure: {formattedDeparture.date}{' '}
-                        {formattedDeparture.time}
+                        Departure: {formattedDeparture.date} {formattedDeparture.time}
                       </Text>
                       <Text>
                         Arrival: {formattedArrival.date} {formattedArrival.time}
                       </Text>
                       <Text>Price: {bus.price}</Text>
-                      <Text>From: {locationMap[bus.from]}</Text>
-                      <Text>To: {locationMap[bus.to]}</Text>
+                      <Text>From: {locationMap[bus.from._id]}</Text>
+                      <Text>To: {locationMap[bus.to._id]}</Text>
                       <Text>
-                        Stops:{' '}
-                        {bus.stops
-                          .map((stop: any) => locationMap[stop])
-                          .join(', ')}
+                        Stops: {bus.stops.map((stop: any) => locationMap[stop._id]).join(', ')}
                       </Text>
                       <TouchableNativeFeedback
                         onPress={() => {
-                          navigation.navigate(ROUTES.BOOKING, {bus});
-                        }}>
+                          navigation.navigate(ROUTES.BOOKING, { bus });
+                        }}
+                      >
                         <Text style={styles.bookButton}>Book Now</Text>
                       </TouchableNativeFeedback>
                     </View>

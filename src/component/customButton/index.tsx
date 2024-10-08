@@ -4,7 +4,7 @@ import {COLORS} from '../../constants/colors'; // Assuming you have a colors fil
 
 type ButtonProps = {
   title: string;
-  onPress: () => void;
+  onPress?: () => void;
   color?: 'primary' | 'secondary' | 'success' | 'danger'; // Define the available colors
   size?: 'small' | 'normal' | 'large'; // Define available sizes
   fullWidth?: boolean;

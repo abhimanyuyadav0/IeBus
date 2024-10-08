@@ -10,12 +10,12 @@ import {Grid, GridItem} from '../../../component/library';
 import {COLORS} from '../../../constants/colors';
 
 const seatData = [
-  {id: 1, number: '1A', price: 20, booked: false},
-  {id: 2, number: '1B', price: 20, booked: false},
-  {id: 3, number: '1C', price: 20, booked: true}, // Example of a booked seat
-  {id: 4, number: '2A', price: 25, booked: false},
-  {id: 5, number: '2B', price: 25, booked: false},
-  {id: 6, number: '2C', price: 25, booked: true}, // Example of a booked seat
+  {id: 1, seatNumber: '1A', price: 20, booked: false},
+  {id: 2, seatNumber: '1B', price: 20, booked: false},
+  {id: 3, seatNumber: '1C', price: 20, booked: true}, // Example of a booked seat
+  {id: 4, seatNumber: '2A', price: 25, booked: false},
+  {id: 5, seatNumber: '2B', price: 25, booked: false},
+  {id: 6, seatNumber: '2C', price: 25, booked: true}, // Example of a booked seat
 ];
 
 const SeatSelectionScreen = ({
@@ -46,7 +46,7 @@ const SeatSelectionScreen = ({
                 ? styles.selected
                 : styles.available,
             ]}>
-            <Text style={styles.seatNumber}>{item.number}</Text>
+            <Text style={styles.seatNumber}>{item.seatNumber}</Text>
             <Text style={styles.price}>${item.price}</Text>
           </View>
         </TouchableNativeFeedback>
@@ -59,7 +59,7 @@ const SeatSelectionScreen = ({
       <Text style={styles.header}>Select Seats for {bus.name}</Text>
       <Grid>
         <FlatList
-          data={seatData}
+          data={bus?.seats}
           renderItem={renderSeat}
           keyExtractor={item => item.id.toString()}
           numColumns={4}
