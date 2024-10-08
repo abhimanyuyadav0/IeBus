@@ -4,6 +4,7 @@ export const COLORS = {
   background: {
     primary: '#FFFFFF',
     secondary: '#f0f0f0',
+    danger: '#ff5252',
     disabled: '#A1A1A1',
     placeholder: '#B0B0B0',
   },
@@ -12,6 +13,7 @@ export const COLORS = {
     available:'#e0e0e0',
     selected:'#66bb6a'
   },
+  success:'#66bb6a',
   surface: '#FFFFFF',
   error: '#B00020',
   text: {

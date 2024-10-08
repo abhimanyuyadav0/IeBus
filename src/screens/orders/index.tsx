@@ -4,24 +4,17 @@ import {
   Text,
   View,
   FlatList,
-  TouchableNativeFeedback,
   Alert,
 } from 'react-native';
 import {Card, Grid, GridItem} from '../../component/library';
 import {COLORS} from '../../constants/colors';
-import BackButton from '../../component/backButton';
-import {ROUTES} from '../../constants/routes';
 import {useQuery} from '@tanstack/react-query';
 import {getOrders} from '../../api/services/orders';
+import {CustomButton} from '../../component';
 
 const OrdersScreen = ({navigation}: any) => {
   const [bookedTickets, setBookedTickets] = useState<any[]>([]);
-  const {
-    data,
-    isPending: loading,
-    isError,
-    refetch,
-  } = useQuery({
+  const {data} = useQuery({
     queryKey: ['orders'],
     queryFn: getOrders,
   });
@@ -72,11 +65,12 @@ const OrdersScreen = ({navigation}: any) => {
               </GridItem>
             </Grid>
             <Text>Price: {item.price}</Text>
-            <TouchableNativeFeedback onPress={() => handleDelete(item.id)}>
-              <View style={styles.deleteButton}>
-                <Text style={styles.buttonText}>Delete Ticket</Text>
-              </View>
-            </TouchableNativeFeedback>
+            <CustomButton
+              title="Danger Large"
+              onPress={() => handleDelete(item.id)}
+              color="danger"
+              fullWidth
+            />
           </View>
         </Card>
       </GridItem>
@@ -118,7 +112,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginTop: 10,
-    backgroundColor: 'red',
+    backgroundColor: COLORS.background.danger,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

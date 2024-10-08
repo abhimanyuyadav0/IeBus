@@ -3,7 +3,7 @@ import apiEndPoint from '../handlers/endPoint';
 
 // Create an Axios instance
 const api = axios.create({
-  baseURL: 'https://elite-mix-437808-u8.de.r.appspot.com/v1/',
+  baseURL: 'http://localhost:5000/v1/',
   timeout: 10000, // Optional timeout of 10 seconds
   headers: {
     'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ const getOrders = async () => {
     const { data } = await api.get(apiEndPoint.order);
     return data;
   } catch (error) {
-    console.error('Error fetching orders:', error.message || 'Unknown error');
+    console.log('Error fetching orders:', error.message || 'Unknown error');
     throw error;
   }
 };
@@ -29,7 +29,7 @@ const createOrder = async (payload) => {
     const { data } = await api.post(apiEndPoint.order, payload);
     return data;
   } catch (error) {
-    console.error('Error creating order:', error.message || 'Unknown error');
+    console.log('Error creating order:', error.message || 'Unknown error');
     throw error;
   }
 };
@@ -40,7 +40,7 @@ const updateOrder = async (id, payload) => {
     const { data } = await api.patch(`${apiEndPoint.order}/${id}`, payload);
     return data;
   } catch (error) {
-    console.error(`Error updating order with ID ${id}:`, error.message || 'Unknown error');
+    console.log(`Error updating order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }
 };
@@ -51,7 +51,7 @@ const deleteOrder = async (id) => {
     const { data } = await api.delete(`${apiEndPoint.order}/${id}`);
     return data;
   } catch (error) {
-    console.error(`Error deleting order with ID ${id}:`, error.message || 'Unknown error');
+    console.log(`Error deleting order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }
 };
@@ -62,7 +62,7 @@ const getOrderById = async (id) => {
     const { data } = await api.get(`${apiEndPoint.order}/${id}`);
     return data;
   } catch (error) {
-    console.error(`Error fetching order with ID ${id}:`, error.message || 'Unknown error');
+    console.log(`Error fetching order with ID ${id}:`, error.message || 'Unknown error');
     throw error;
   }
 };
