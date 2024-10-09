@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,32 +11,36 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { ROUTES } from '../../constants/routes';
-import { Card, Grid, GridItem } from '../../component/library';
-import { useQuery } from '@tanstack/react-query';
-import { getBuses } from '../../api/services/buses';
-import { getLocations } from '../../api/services/locations';
-import { COLORS } from '../../constants/colors';
-import { formatDateTime } from '../../utils/dateFormater';
+import {ROUTES} from '../../constants/routes';
+import {Card, Grid, GridItem} from '../../component/library';
+import {useQuery} from '@tanstack/react-query';
+import {getBuses} from '../../api/services/buses';
+import {getLocations} from '../../api/services/locations';
+import {COLORS} from '../../constants/colors';
+import {formatDateTime} from '../../utils/dateFormater';
+import {CustomButton, CustomText} from '../../component';
+import { useTheme } from '../../theme';
+import { ThemeColors } from '../../theme/themeTypes';
 
-const BusScreen = ({ navigation }: any) => {
+const BusScreen = ({navigation}: any) => {
+  const {theme} = useTheme(); 
+  const styles = createStyles(theme);
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
-  // Fetch buses and locations using TanStack Query
-  const { data: busData, isLoading: loadingBuses } = useQuery<any>({
+  const {data: busData, isLoading: loadingBuses} = useQuery<any>({
     queryKey: ['buses'],
     queryFn: getBuses,
+    refetchOnWindowFocus:true
   });
 
-  const { data: allLocations, isLoading: loadingLocations } = useQuery<any>({
+  const {data: allLocations, isLoading: loadingLocations} = useQuery<any>({
     queryKey: ['locations'],
     queryFn: getLocations,
   });
 
-  // Loading state for both queries
   if (loadingBuses || loadingLocations) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -46,7 +50,7 @@ const BusScreen = ({ navigation }: any) => {
       acc[location._id] = location.name;
       return acc;
     },
-    {}
+    {},
   );
 
   const searchBuses = () => {
@@ -55,14 +59,18 @@ const BusScreen = ({ navigation }: any) => {
     return busData.buses.filter((bus: any) => {
       const fromMatch =
         !fromLocation ||
-        locationMap[bus.from._id]?.toLowerCase().includes(fromLocation.toLowerCase());
+        locationMap[bus.from._id]
+          ?.toLowerCase()
+          .includes(fromLocation.toLowerCase());
 
       const toMatch =
         !toLocation ||
-        locationMap[bus.to._id]?.toLowerCase().includes(toLocation.toLowerCase());
+        locationMap[bus.to._id]
+          ?.toLowerCase()
+          .includes(toLocation.toLowerCase());
 
       const isIntermediateStop = bus.stops.some((stop: any) =>
-        locationMap[stop._id]?.toLowerCase().includes(toLocation.toLowerCase())
+        locationMap[stop._id]?.toLowerCase().includes(toLocation.toLowerCase()),
       );
 
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
@@ -72,7 +80,7 @@ const BusScreen = ({ navigation }: any) => {
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
       .filter((location: any) =>
-        location.name.toLowerCase().includes(input.toLowerCase())
+        location.name.toLowerCase().includes(input.toLowerCase()),
       )
       .map((location: any) => location.name);
 
@@ -107,7 +115,7 @@ const BusScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Bus List</Text>
+      <CustomText style={styles.header}>Bus List</CustomText>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
@@ -118,10 +126,11 @@ const BusScreen = ({ navigation }: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'from')}>
-                <Text style={styles.suggestionItem}>{item}</Text>
+            keyExtractor={item => item}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => handleSuggestionSelect(item, 'from')}>
+                <CustomText style={styles.suggestionItem}>{item}</CustomText>
               </TouchableOpacity>
             )}
             style={styles.suggestionsContainer}
@@ -137,10 +146,11 @@ const BusScreen = ({ navigation }: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'to')}>
-                <Text style={styles.suggestionItem}>{item}</Text>
+            keyExtractor={item => item}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => handleSuggestionSelect(item, 'to')}>
+                <CustomText style={styles.suggestionItem}>{item}</CustomText>
               </TouchableOpacity>
             )}
             style={styles.suggestionsContainer}
@@ -160,25 +170,31 @@ const BusScreen = ({ navigation }: any) => {
                 <GridItem key={index} span={12}>
                   <Card title={bus.name} onPress={() => {}}>
                     <View style={styles.busItem}>
-                      <Text>
-                        Departure: {formattedDeparture.date} {formattedDeparture.time}
-                      </Text>
-                      <Text>
+                      <CustomText>
+                        Departure: {formattedDeparture.date}{' '}
+                        {formattedDeparture.time}
+                      </CustomText>
+                      <CustomText>
                         Arrival: {formattedArrival.date} {formattedArrival.time}
-                      </Text>
-                      <Text>Price: {bus.price}</Text>
-                      <Text>From: {locationMap[bus.from._id]}</Text>
-                      <Text>To: {locationMap[bus.to._id]}</Text>
-                      <Text>
-                        Stops: {bus.stops.map((stop: any) => locationMap[stop._id]).join(', ')}
-                      </Text>
-                      <TouchableNativeFeedback
-                        onPress={() => {
-                          navigation.navigate(ROUTES.BOOKING, { bus });
-                        }}
-                      >
-                        <Text style={styles.bookButton}>Book Now</Text>
-                      </TouchableNativeFeedback>
+                      </CustomText>
+                      <CustomText>Price: {bus.price}</CustomText>
+                      <CustomText>From: {locationMap[bus.from._id]}</CustomText>
+                      <CustomText>To: {locationMap[bus.to._id]}</CustomText>
+                      <CustomText>
+                        Stops:{' '}
+                        {bus.stops
+                          .map((stop: any) => locationMap[stop._id])
+                          .join(', ')}
+                      </CustomText>
+                      <View style={{alignItems: 'flex-end'}}>
+                        <CustomButton
+                          title="Book Now"
+                          onPress={() => {
+                            navigation.navigate(ROUTES.BOOKING, {bus});
+                          }}
+                          size="small"
+                        />
+                      </View>
                     </View>
                   </Card>
                 </GridItem>
@@ -186,17 +202,18 @@ const BusScreen = ({ navigation }: any) => {
             })}
           </Grid>
         ) : (
-          <Text style={styles.header}>No Bus found</Text>
+          <CustomText style={styles.header}>No Bus found</CustomText>
         )}
       </ScrollView>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: theme.background.primary
   },
   header: {
     fontSize: 24,
@@ -208,24 +225,24 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: COLORS.secondary,
+    borderColor: theme.secondary,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
   },
   busItem: {
-    backgroundColor: COLORS.background.secondary,
+    backgroundColor: theme.background.secondary,
     padding: 5,
     borderRadius: 5,
   },
   bookButton: {
-    color: COLORS.success,
+    color: theme.success,
     marginTop: 10,
   },
   suggestionsContainer: {
-    backgroundColor: COLORS.background.primary,
-    borderColor: COLORS.background.secondary,
+    backgroundColor: theme.background.primary,
+    borderColor: theme.background.secondary,
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
@@ -236,7 +253,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.background.secondary,
+    borderBottomColor: theme.background.secondary,
   },
 });
 

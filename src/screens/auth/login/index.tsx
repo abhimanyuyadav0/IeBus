@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     password: '',
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkUserData = async () => {
+      const userData = await AsyncStorage.getItem('userData');
+      if (userData) {
+        navigation.replace(ROUTES.DASHBOARD);
+      }
+    };
+    checkUserData();
+  }, [navigation]);
+
   const mutation: any = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data: any) => {

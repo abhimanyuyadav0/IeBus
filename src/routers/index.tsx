@@ -8,60 +8,83 @@ import UserScreen from '../screens/users';
 import BusScreen from '../screens/buses';
 import BookingScreen from '../screens/booking';
 import OrdersScreen from '../screens/orders';
-import SeatSelectionScreen from '../screens/booking/seatSelection';
 import PaymentScreen from '../screens/payment';
 import ConfirmationScreen from '../screens/confirmPayment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CustomHeader from '../component/header';
 
 const Stack = createNativeStackNavigator();
 
 const AppRouter = () => {
+
+  const getCustomHeader = (navigation: any, title: string, headerBackVisible = true) => {
+    return () => (
+      <CustomHeader title={title} navigation={navigation} headerBackVisible={headerBackVisible} />
+    );
+  };
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={ROUTES.LOGIN}>
         <Stack.Screen
           name={ROUTES.LOGIN}
           component={LoginScreen}
-          options={{title: 'Login', headerBackVisible: false}}
+          options={{
+            headerShown: false, // No header for the login screen
+            headerBackVisible: false, // Ensure no back button
+          }}
         />
         <Stack.Screen
           name={ROUTES.SIGNUP}
           component={SignUpScreen}
-          options={{title: 'Sign Up'}}
+          options={{headerShown: false}}
         />
         <Stack.Screen
           name={ROUTES.CONFIRMATION}
           component={ConfirmationScreen}
-          options={{title: 'Payment Confirmed'}}
+          options={{header: ({navigation}) => getCustomHeader(navigation, 'Payment Confirmed')()}}
         />
         <Stack.Screen
           name={ROUTES.DASHBOARD}
           component={Dashboard}
-          options={{title: 'Welcome to eBus', headerBackVisible: false}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Welcome to eBus',false),
+          })}
         />
         <Stack.Screen
           name={ROUTES.USERS}
           component={UserScreen}
-          options={{title: 'Users'}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Users'),
+          })}
         />
         <Stack.Screen
           name={ROUTES.BUS}
           component={BusScreen}
-          options={{title: 'Buses'}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Buses'),
+          })}
         />
         <Stack.Screen
           name={ROUTES.BOOKING}
           component={BookingScreen}
-          options={{title: 'Booking'}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Booking'),
+          })}
         />
         <Stack.Screen
           name={ROUTES.ORDERS}
           component={OrdersScreen}
-          options={{title: 'Your Orders'}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Your Orders'),
+          })}
         />
         <Stack.Screen
           name={ROUTES.PAYMENT}
           component={PaymentScreen}
-          options={{title: 'Payment'}}
+          options={({navigation}) => ({
+            header: getCustomHeader(navigation, 'Payment'),
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
