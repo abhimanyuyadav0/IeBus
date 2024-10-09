@@ -85,4 +85,4 @@ const getBusById = async (id: any) => {
     throw error;
   }
 };
-export {getBuses, createBus, updateBus, deleteBus, getBusById, bookBusSeat};
+export {getBuses, createBus, updateBus, deleteBus, getBusById, bookBusSeat,cancelBusSeat};

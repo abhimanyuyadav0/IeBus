@@ -16,7 +16,7 @@ import {getUser} from '../../utils/getUser';
 import {ThemeColors} from '../../theme/themeTypes';
 import {useTheme} from '../../theme';
 import {useToast} from 'react-native-toast-notifications';
-import {bookBusSeat} from '../../api/services/buses';
+import {bookBusSeat, cancelBusSeat} from '../../api/services/buses';
 
 const OrdersScreen = ({navigation}: any) => {
   const {theme} = useTheme();
@@ -59,7 +59,7 @@ const OrdersScreen = ({navigation}: any) => {
   });
 
   const updateBooking = useMutation({
-    mutationFn: (item: any) => bookBusSeat(item.bus._id, item.selectedSeats),
+    mutationFn: (item: any) => cancelBusSeat(item.bus._id, item.selectedSeats),
     onSuccess: () => {
       deleteTicket.mutate(selectedOrder._id); 
       refetch();

@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import {TouchableOpacity, StyleSheet, View} from 'react-native';
 import {useTheme} from '../../theme';
 import {ThemeColors} from '../../theme/themeTypes';
 import CustomText from '../customText';
@@ -12,6 +12,7 @@ type ButtonProps = {
   fullWidth?: boolean;
   disabled?: boolean;
   bold?: boolean;
+  variant?: 'normal' | 'text' | 'outline' | 'link';
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -21,21 +22,59 @@ const CustomButton: React.FC<ButtonProps> = ({
   size = 'normal',
   fullWidth = false,
   disabled = false,
-  bold
+  bold,
+  variant = 'normal',
 }) => {
   const {theme} = useTheme();
-  const styles = createStyles(theme, color, fullWidth, disabled); // Pass color to createStyles
+  const styles = createStyles(theme, color, fullWidth, disabled, variant);
 
   return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity
-        style={[styles.button, styles[color], styles[size]]}
+        style={[
+          styles.button,
+          styles[size],
+          getButtonStyle(styles, variant, color),
+        ]}
         onPress={onPress}
         disabled={disabled}>
-        <CustomText bold={bold} style={styles.buttonText}>{title}</CustomText>
+        <CustomText bold={bold} style={getTextStyle(styles, variant, color)}>
+          {title}
+        </CustomText>
       </TouchableOpacity>
     </View>
   );
+};
+
+const getButtonStyle = (
+  styles: any,
+  variant: string,
+  color: string
+) => {
+  switch (variant) {
+    case 'outline':
+      return styles.outline;
+    case 'text':
+      return styles.textButton;
+    case 'link':
+      return styles.link;
+    case 'normal':
+    default:
+      return styles[color];
+  }
+};
+
+const getTextStyle = (styles: any, variant: string, color: string) => {
+  switch (variant) {
+    case 'outline':
+      return [styles.buttonText, styles.outlineText];
+    case 'text':
+      return [styles.buttonText, styles.textButtonText];
+    case 'link':
+      return [styles.linkText];
+    default:
+      return styles.buttonText;
+  }
 };
 
 const createStyles = (
@@ -43,11 +82,12 @@ const createStyles = (
   color: string,
   fullWidth: boolean,
   disabled: boolean,
+  variant: string,
 ) =>
   StyleSheet.create({
     buttonWrapper: {
       alignItems: 'center',
-      marginTop:2,
+      marginTop: 2,
       width: fullWidth ? '100%' : 'auto',
     },
     button: {
@@ -78,6 +118,29 @@ const createStyles = (
     },
     danger: {
       backgroundColor: theme.background.danger,
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: theme.border,
+    },
+    outlineText: {
+      color: theme.border,
+    },
+    // Text style variant
+    textButton: {
+      backgroundColor: 'transparent',
+    },
+    textButtonText: {
+      color: theme.primary,
+    },
+    link: {
+      backgroundColor: 'transparent',
+      padding: 0,
+    },
+    linkText: {
+      color: theme.primary,
+      textDecorationLine: 'underline',
     },
     small: {
       paddingVertical: 3,

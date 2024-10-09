@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {ROUTES} from '../../constants/routes';
-import {CustomButton} from '../../component';
+import {CustomButton, CustomText} from '../../component';
 import SeatSelectionScreen from './seatSelection';
 import {Card} from '../../component/library';
+import {getUser} from '../../utils/getUser';
 
 const BookingScreen = ({navigation, route}: any) => {
   const {bus} = route.params;
@@ -21,7 +22,16 @@ const BookingScreen = ({navigation, route}: any) => {
     name: string;
     contact: string;
   } | null>(null);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUser();
+      setCurrentUser(user);
+    };
+
+    fetchUser();
+  }, []);
   const handleNewPassengerInputChange = (name: string, value: string) => {
     setNewPassenger((prev: any) => ({...prev, [name]: value}));
   };
@@ -165,16 +175,34 @@ const BookingScreen = ({navigation, route}: any) => {
           ))}
         </>
       ) : (
-        <Text>No passenger added</Text>
+        <CustomText>No passenger added</CustomText>
       )}
 
       {editingIndex === null && newPassenger === null && (
-        <View style={{alignItems: 'flex-end'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+        {!formData.some((item) => item.name === `${currentUser?.firstName} ${currentUser?.lastName}`) && (
           <CustomButton
-            title="Add Passenger"
-            onPress={() => setNewPassenger({name: '', contact: ''})}
+            title="Add me"
+            variant='text'
+            onPress={() =>
+              setFormData([
+                ...formData,
+                {
+                  name: `${currentUser?.firstName} ${currentUser?.lastName}`,
+                  contact: currentUser.mobile,
+                },
+              ])
+            }
+            size="small"
           />
-        </View>
+        )}
+        <CustomButton
+          title="Add Passenger"
+          onPress={() => setNewPassenger({name: '', contact: ''})}
+          size="small"
+        />
+      </View>
+      
       )}
 
       {editingIndex === null && newPassenger !== null && (

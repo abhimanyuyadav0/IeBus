@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {Grid, GridItem} from '../../../component/library';
 import {COLORS} from '../../../constants/colors';
+import { CustomText } from '../../../component';
 
 const SeatSelectionScreen = ({
   route,
@@ -15,7 +16,7 @@ const SeatSelectionScreen = ({
   setSelectedSeats,
 }: any) => {
   const {bus} = route.params;
-
+console.log(bus?.seats)
   const toggleSeatSelection = (id: number) => {
     setSelectedSeats((prev: number[]) =>
       prev.includes(id) ? prev.filter(seatId => seatId !== id) : [...prev, id],
@@ -38,8 +39,8 @@ const SeatSelectionScreen = ({
                 ? styles.selected
                 : styles.available,
             ]}>
-            <Text style={styles.seatNumber}>{item.seatNumber}</Text>
-            <Text style={styles.price}>${item.price}</Text>
+            <CustomText style={styles.seatNumber}>{item.seatName}</CustomText>
+            <CustomText style={styles.price}>${item.price}</CustomText>
           </View>
         </TouchableNativeFeedback>
       </View>
@@ -91,11 +92,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.status.selected,
   },
   seatNumber: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 12,
   },
   price: {
-    fontSize: 14,
+    fontSize: 10,
   },
 });
 

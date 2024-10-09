@@ -12,6 +12,9 @@ export interface ThemeColors {
     booked: string;
     available: string;
     selected: string;
+    success: string;
+    warning: string;
+    error: string;
   };
   success: string;
   error: string;
