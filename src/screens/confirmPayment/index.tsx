@@ -6,7 +6,6 @@ import {COLORS} from '../../constants/colors';
 import {useMutation} from '@tanstack/react-query';
 import {createOrder} from '../../api/services/orders';
 import {CustomButton} from '../../component';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUser } from '../../utils/getUser';
 import { bookBusSeat } from '../../api/services/buses';
 
@@ -26,8 +25,8 @@ const ConfirmationScreen = ({route, navigation}: any) => {
     mutationFn: createOrder,
     onSuccess: async() => {
       Alert.alert('Success', 'Order created successfully!'); 
-      let seatIds=selectedSeats
-      await bookBusSeat(bus._id, seatIds)
+      let seatIds = selectedSeats;
+      await bookBusSeat(bus._id, seatIds);
       navigation.replace(ROUTES.DASHBOARD); 
     },
     onError: (error: any) => {

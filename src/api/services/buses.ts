@@ -21,11 +21,12 @@ const createBus = async (payload: any) => {
   }
 };
 const bookBusSeat = async (id: any, seatIds: any) => {
-const payload={seatIds:seatIds}
+  const payload = {seatIds: seatIds};
+  console.log(id,'gggggggggggggggggggggggggggggggggggggg',payload);
   try {
     const {data} = await api.patch(`${apiEndPoint.bus}/${id}/book`, payload);
-    console.log('gggggggggggggggggggggggggggggggggggggg')
-    return data;
+  console.log(data,'updated');
+  return data;
   } catch (error: any) {
     console.error(
       `Error updating bus with ID ${id}:`,

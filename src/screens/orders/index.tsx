@@ -22,10 +22,10 @@ const OrdersScreen = ({navigation}: any) => {
   useEffect(() => {
     const fetchUser = async () => {
       const user = await getUser();
-      setUserId(user._id || '670125742ccb782ab8bce842'); 
+      setUserId(user._id || '670125742ccb782ab8bce842');
     };
 
-    fetchUser(); 
+    fetchUser();
   }, []);
   const {
     data,
@@ -38,9 +38,9 @@ const OrdersScreen = ({navigation}: any) => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteOrder(id), 
+    mutationFn: (id: string) => deleteOrder(id),
     onSuccess: () => {
-      // Alert.alert('Success', 'Order deleted successfully');
+      Alert.alert('Success', 'Order deleted successfully');
       refetch();
     },
     onError: (error: any) => {
@@ -79,12 +79,14 @@ const OrdersScreen = ({navigation}: any) => {
               </GridItem>
             </Grid>
             <Text>Price: {item.totalPrice}</Text>
-            <CustomButton
-              title="Delete"
-              onPress={() => handleDelete(item._id)}
-              color="danger"
-              fullWidth
-            />
+            <View style={{alignItems: 'flex-end'}}>
+              <CustomButton
+                title="Delete"
+                onPress={() => handleDelete(item._id)}
+                color="success"
+                size="small"
+              />
+            </View>
           </View>
         </Card>
       </GridItem>
@@ -100,7 +102,10 @@ const OrdersScreen = ({navigation}: any) => {
           <Text style={styles.header}>Booked Tickets</Text>
           {data?.order.length ? (
             <FlatList
-              data={data?.order.sort((a: any, b: any) => new Date(b.updatedAt) - new Date(a.updatedAt))}
+              data={data?.order.sort(
+                (a: any, b: any) =>
+                  +new Date(b.updatedAt) - +new Date(a.updatedAt),
+              )}
               renderItem={renderItem}
               keyExtractor={item => item.id}
             />

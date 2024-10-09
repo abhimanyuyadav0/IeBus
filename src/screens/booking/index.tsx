@@ -113,60 +113,68 @@ const BookingScreen = ({navigation, route}: any) => {
     <View style={styles.container}>
       <Text style={styles.header}>Booking for {bus.name}</Text>
 
-      {formData.map((person, index) => (
-        <Card key={index} style={styles.card}>
-          {editingIndex === index ? (
-            <View>
-              <Text>Editing Passenger {index + 1}:</Text>
-              <TextInput
-                style={styles.input}
-                value={newPassenger?.name}
-                onChangeText={value =>
-                  handleNewPassengerInputChange('name', value)
-                }
-                placeholder="Enter your name"
-              />
-              <TextInput
-                style={styles.input}
-                value={newPassenger?.contact}
-                onChangeText={value =>
-                  handleNewPassengerInputChange('contact', value)
-                }
-                placeholder="Enter your contact number"
-                keyboardType="phone-pad"
-              />
-              <View style={styles.actionButtons}>
-                <TouchableOpacity onPress={() => saveChanges(index)}>
-                  <Text style={styles.saveButton}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={cancelEditing}>
-                  <Text style={styles.cancelButton}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View>
-              <Text>Passenger {index + 1}:</Text>
-              <Text>Name: {person.name}</Text>
-              <Text>Contact: {person.contact}</Text>
-              <View style={styles.actionButtons}>
-                <TouchableOpacity onPress={() => startEditing(index)}>
-                  <Text style={styles.editButton}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deletePassenger(index)}>
-                  <Text style={styles.deleteButton}>Delete</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </Card>
-      ))}
+      {formData.length > 0 ? (
+        <>
+          {formData.map((person, index) => (
+            <Card key={index} style={styles.card}>
+              {editingIndex === index ? (
+                <View>
+                  <Text>Editing Passenger {index + 1}:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={newPassenger?.name}
+                    onChangeText={value =>
+                      handleNewPassengerInputChange('name', value)
+                    }
+                    placeholder="Enter your name"
+                  />
+                  <TextInput
+                    style={styles.input}
+                    value={newPassenger?.contact}
+                    onChangeText={value =>
+                      handleNewPassengerInputChange('contact', value)
+                    }
+                    placeholder="Enter your contact number"
+                    keyboardType="phone-pad"
+                  />
+                  <View style={styles.actionButtons}>
+                    <TouchableOpacity onPress={() => saveChanges(index)}>
+                      <Text style={styles.saveButton}>Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={cancelEditing}>
+                      <Text style={styles.cancelButton}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <View>
+                  <Text>Passenger {index + 1}:</Text>
+                  <Text>Name: {person.name}</Text>
+                  <Text>Contact: {person.contact}</Text>
+                  <View style={styles.actionButtons}>
+                    <TouchableOpacity onPress={() => startEditing(index)}>
+                      <Text style={styles.editButton}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deletePassenger(index)}>
+                      <Text style={styles.deleteButton}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </Card>
+          ))}
+        </>
+      ) : (
+        <Text>No passenger added</Text>
+      )}
 
       {editingIndex === null && newPassenger === null && (
-        <CustomButton
-          title="Add Passenger"
-          onPress={() => setNewPassenger({name: '', contact: ''})}
-        />
+        <View style={{alignItems: 'flex-end'}}>
+          <CustomButton
+            title="Add Passenger"
+            onPress={() => setNewPassenger({name: '', contact: ''})}
+          />
+        </View>
       )}
 
       {editingIndex === null && newPassenger !== null && (
