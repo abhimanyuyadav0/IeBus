@@ -17,18 +17,17 @@ const Stack = createNativeStackNavigator();
 const AppRouter = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={ROUTES.DASHBOARD}>
-        {/* Uncomment these lines if you want to start from Login or SignUp */}
-        {/* <Stack.Screen
+      <Stack.Navigator initialRouteName={ROUTES.LOGIN}>
+        <Stack.Screen
           name={ROUTES.LOGIN}
           component={LoginScreen}
-          options={{ title: 'Login' }}
+          options={{title: 'Login', headerBackVisible: false}}
         />
         <Stack.Screen
           name={ROUTES.SIGNUP}
           component={SignUpScreen}
-          options={{ title: 'Sign Up' }}
-        /> */}
+          options={{title: 'Sign Up'}}
+        />
         <Stack.Screen
           name={ROUTES.CONFIRMATION}
           component={ConfirmationScreen}
@@ -37,7 +36,7 @@ const AppRouter = () => {
         <Stack.Screen
           name={ROUTES.DASHBOARD}
           component={Dashboard}
-          options={{title: 'Welcome to eBus'}}
+          options={{title: 'Welcome to eBus', headerBackVisible: false}}
         />
         <Stack.Screen
           name={ROUTES.USERS}
@@ -64,7 +63,6 @@ const AppRouter = () => {
           component={PaymentScreen}
           options={{title: 'Payment'}}
         />
-        
       </Stack.Navigator>
     </NavigationContainer>
   );

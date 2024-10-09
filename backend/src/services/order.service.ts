@@ -1,15 +1,14 @@
-import Order, { IOrder } from '../models/order.model'; 
+import Order, { IOrder } from '../models/order.model'; // Adjust the path accordingly
 
 export const createOrder = async (data: any): Promise<IOrder> => {
   const order = new Order(data);
   return await order.save();
 };
 
-export const getOrderById = async (id: string): Promise<IOrder | null> => {
-  return await Order.findById(id).populate('bus').exec(); 
+export const getAllOrders = async (userId: string): Promise<IOrder[]> => {
+  return await Order.find({ user: userId }).populate('bus').exec(); // Populate bus details
 };
 
-// Delete an order by ID
 export const deleteOrder = async (id: string): Promise<string> => {
   await Order.findByIdAndDelete(id);
   return 'Order deleted';

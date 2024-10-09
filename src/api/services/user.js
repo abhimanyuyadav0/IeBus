@@ -1,18 +1,6 @@
-import axios from 'axios';
 import apiEndPoint from '../handlers/endPoint';
+import api from '../handlers/api';
 
-// Create an Axios instance
-const api = axios.create({
-  baseURL: 'https://elite-mix-437808-u8.de.r.appspot.com/v1/',
-  timeout: 10000, // Optional timeout of 10 seconds
-  headers: {
-    'Content-Type': 'application/json',
-  }
-});
-
-// API Functions
-
-// Get Users
 const getUsers = async () => {
   try {
     const { data } = await api.get(apiEndPoint.user);
@@ -23,7 +11,6 @@ const getUsers = async () => {
   }
 };
 
-// Create User
 const createUser = async (payload) => {
   try {
     const { data } = await api.post(apiEndPoint.user, payload);
@@ -34,7 +21,6 @@ const createUser = async (payload) => {
   }
 };
 
-// Update User
 const updateUser = async (id, payload) => {
   try {
     const { data } = await api.patch(`${apiEndPoint.user}/${id}`, payload);
@@ -45,7 +31,6 @@ const updateUser = async (id, payload) => {
   }
 };
 
-// Delete User
 const deleteUser = async (id) => {
   try {
     const { data } = await api.delete(`${apiEndPoint.user}/${id}`);
@@ -56,7 +41,6 @@ const deleteUser = async (id) => {
   }
 };
 
-// Get User by ID
 const getUserById = async (id) => {
   try {
     const { data } = await api.get(`${apiEndPoint.user}/${id}`);
@@ -76,7 +60,6 @@ const loginUser = async (payload) => {
     throw error;
   }
 };
-// Export all functions
 export {
   loginUser,
   getUsers,

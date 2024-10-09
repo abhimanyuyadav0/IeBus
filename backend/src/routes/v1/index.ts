@@ -7,7 +7,7 @@ import { locationRoute } from './location.route';
 const routes = express.Router();
 
 // Routes
-// routes.use('/v1/users', usersRoute);
+routes.use('/v1/users', usersRoute);
 routes.use('/v1/order', orderRoute);
 routes.use('/v1/bus', busRoute);
 routes.use('/v1/locations', locationRoute);

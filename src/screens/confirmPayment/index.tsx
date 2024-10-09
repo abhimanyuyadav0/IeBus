@@ -7,22 +7,10 @@ import {useMutation} from '@tanstack/react-query';
 import {createOrder} from '../../api/services/orders';
 import {CustomButton} from '../../component';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUser } from '../../utils/getUser';
 
 const ConfirmationScreen = ({route, navigation}: any) => {
   const {bus, selectedSeats, totalPrice, passengers} = route.params;
-console.log(totalPrice)
-  const getUserId = async () => {
-    try {
-      const userDataString = await AsyncStorage.getItem('userData');
-      if (userDataString) {
-        const userData = JSON.parse(userDataString);
-        return userData.userId; // Access userId from userData
-      }
-    } catch (error) {
-      console.error('Error retrieving userId:', error);
-    }
-    return null; // Return null if userData is not found or an error occurred
-  };
 
   const renderSelectedSeats = () => {
     return selectedSeats.map((seatId: number) => (
@@ -36,7 +24,7 @@ console.log(totalPrice)
     mutationFn: createOrder,
     onSuccess: () => {
       Alert.alert('Success', 'Order created successfully!'); // Success message
-      // navigation.replace(ROUTES.DASHBOARD); // Navigate to dashboard
+      navigation.replace(ROUTES.DASHBOARD); // Navigate to dashboard
     },
     onError: (error: any) => {
       console.error('Error creating order:', error.message || 'Unknown error');
@@ -48,9 +36,9 @@ console.log(totalPrice)
   });
 
   const handleDone = async () => {
-    const userId = await getUserId(); // Await the async function
+    const user = await getUser(); // Await the async function
     const payload = {
-      user: userId ? userId : '670125742ccb782ab8bce842',
+      userId: user ? user._id : '670125742ccb782ab8bce842',
       bus: bus?._id,
       passengers: passengers?.map((passenger: any) => ({
         name: passenger.name,
@@ -60,7 +48,7 @@ console.log(totalPrice)
       totalPrice,
     };
     console.log(payload);
-    mutation.mutate(payload); // Call the mutation with the payload
+    mutation.mutate(payload);
   };
 
   useEffect(() => {

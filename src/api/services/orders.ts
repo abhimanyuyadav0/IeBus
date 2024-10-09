@@ -1,21 +1,9 @@
-import axios from 'axios';
 import apiEndPoint from '../handlers/endPoint';
+import api from '../handlers/api';
 
-// Create an Axios instance
-const api = axios.create({
-  baseURL: 'https://elite-mix-437808-u8.de.r.appspot.com/v1/',
-  timeout: 10000, // Optional timeout of 10 seconds
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// API Functions
-
-// Get Orders
-const getOrders = async () => {
+const getOrders = async (id: any) => {
   try {
-    const {data} = await api.get(apiEndPoint.order);
+    const {data} = await api.get(`${apiEndPoint.order}/${id}`);
     return data;
   } catch (error: any) {
     console.error('Error fetching orders:', error.message || 'Unknown error');
@@ -23,7 +11,6 @@ const getOrders = async () => {
   }
 };
 
-// Create User
 const createOrder = async (payload: any) => {
   try {
     const {data} = await api.post(apiEndPoint.order, payload);
@@ -34,7 +21,6 @@ const createOrder = async (payload: any) => {
   }
 };
 
-// Update Order
 const updateOrder = async (id: any, payload: any) => {
   try {
     const {data} = await api.patch(`${apiEndPoint.order}/${id}`, payload);
@@ -48,7 +34,6 @@ const updateOrder = async (id: any, payload: any) => {
   }
 };
 
-// Delete Order
 const deleteOrder = async (id: any) => {
   try {
     const {data} = await api.delete(`${apiEndPoint.order}/${id}`);
@@ -62,7 +47,6 @@ const deleteOrder = async (id: any) => {
   }
 };
 
-// Get Order by ID
 const getOrderById = async (id: any) => {
   try {
     const {data} = await api.get(`${apiEndPoint.order}/${id}`);
