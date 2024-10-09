@@ -6,10 +6,12 @@ import {COLORS} from '../../constants/colors';
 import {useMutation} from '@tanstack/react-query';
 import {createOrder} from '../../api/services/orders';
 import {CustomButton} from '../../component';
-import { getUser } from '../../utils/getUser';
-import { bookBusSeat } from '../../api/services/buses';
+import {getUser} from '../../utils/getUser';
+import {bookBusSeat} from '../../api/services/buses';
+import {useToast} from 'react-native-toast-notifications';
 
 const ConfirmationScreen = ({route, navigation}: any) => {
+  const toast = useToast();
   const {bus, selectedSeats, totalPrice, passengers} = route.params;
   const renderSelectedSeats = () => {
     return bus.seats
@@ -23,25 +25,26 @@ const ConfirmationScreen = ({route, navigation}: any) => {
 
   const mutation = useMutation({
     mutationFn: createOrder,
-    onSuccess: async() => {
-      Alert.alert('Success', 'Order created successfully!'); 
+    onSuccess: async () => {
+      toast.show('Ticket booked successfully', {
+        type: 'success',
+      });
       let seatIds = selectedSeats;
       await bookBusSeat(bus._id, seatIds);
-      navigation.replace(ROUTES.DASHBOARD); 
+      navigation.replace(ROUTES.DASHBOARD);
     },
     onError: (error: any) => {
       console.error('Error creating order:', error.message || 'Unknown error');
-      Alert.alert(
-        'Error',
-        'Failed to create the order. Please try again later.',
-      );
+      toast.show('Failed to book the ticket.', {
+        type: 'error',
+      });
     },
   });
 
   const handleDone = async () => {
-    const user = await getUser(); 
+    const user = await getUser();
     const payload = {
-      user: user ? user._id : '670125742ccb782ab8bce842',
+      user: user._id,
       bus: bus?._id,
       passengers: passengers?.map((passenger: any) => ({
         name: passenger.name,
@@ -79,7 +82,7 @@ const ConfirmationScreen = ({route, navigation}: any) => {
         <CustomButton
           title="Back to Dashboard"
           // onPress={() => navigation.replace(ROUTES.DASHBOARD)}
-          onPress={()=>handleDone()}
+          onPress={() => handleDone()}
         />
       </Card>
     </View>

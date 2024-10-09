@@ -47,3 +47,21 @@ export const bookSeats = async (
 
   return await bus.save();
 };
+
+export const cancelSeats = async (
+  id: string,
+  seatIds: string[],
+): Promise<IBus | null> => {
+  const bus = await Bus.findById(id);
+  if (!bus) {
+    return null;
+  }
+
+  bus.seats = bus.seats.map((seat: ISeat): any => {
+    return seatIds.includes(seat._id.toString())
+      ? {...seat.toObject(), booked: false}
+      : seat; 
+  });
+
+  return await bus.save();
+};

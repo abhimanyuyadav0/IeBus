@@ -6,6 +6,7 @@ import {
   updateById,
   deleteById,
   bookBusSeats,
+  cancelBusSeats,
 } from '../../controllers/bus.controller';
 
 const router = Router();
@@ -16,5 +17,6 @@ router.post('/', createNewBus);
 router.patch('/:id', updateById);
 router.delete('/:id', deleteById);
 router.patch('/:id/book', bookBusSeats);
+router.patch('/:id/cancel', cancelBusSeats);
 
 export { router as busRoute };

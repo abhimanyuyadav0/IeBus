@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { createBus, getAllBuses, getBusById, updateBus, deleteBus, bookSeats } from '../services/bus.service';
+import { createBus, getAllBuses, getBusById, updateBus, deleteBus, bookSeats, cancelSeats } from '../services/bus.service';
 
 export const createNewBus = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,6 +28,26 @@ export const bookBusSeats = async (req: Request, res: Response, next: NextFuncti
     }
 
     const updatedBus = await bookSeats(busId, seatIds);
+    if (!updatedBus) {
+      return res.status(404).json({ message: 'Bus not found or seats unavailable.' });
+    }
+
+    res.status(200).json({ message: 'Seats booked successfully', bus: updatedBus });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cancelBusSeats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { seatIds } = req.body;
+    const busId = req.params.id;
+
+    if (!seatIds || !Array.isArray(seatIds) || seatIds.length === 0) {
+      return res.status(400).json({ message: 'Please provide seat IDs to book.' });
+    }
+
+    const updatedBus = await cancelSeats(busId, seatIds);
     if (!updatedBus) {
       return res.status(404).json({ message: 'Bus not found or seats unavailable.' });
     }

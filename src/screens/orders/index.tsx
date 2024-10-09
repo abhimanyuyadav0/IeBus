@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   FlatList,
   Alert,
@@ -16,12 +15,15 @@ import {formatDateTime} from '../../utils/dateFormater';
 import {getUser} from '../../utils/getUser';
 import {ThemeColors} from '../../theme/themeTypes';
 import {useTheme} from '../../theme';
-import CustomAlert from '../../component/customAlert';
+import {useToast} from 'react-native-toast-notifications';
+import {bookBusSeat} from '../../api/services/buses';
 
 const OrdersScreen = ({navigation}: any) => {
   const {theme} = useTheme();
+  const toast = useToast();
   const styles = createStyles(theme);
   const [userId, setUserId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -37,15 +39,18 @@ const OrdersScreen = ({navigation}: any) => {
     isLoading: loading,
     refetch,
   } = useQuery<any>({
-    queryKey: ['orders'],
+    queryKey: ['orders', userId],
     queryFn: () => getOrders(userId),
     enabled: !!userId,
   });
 
-  const deleteMutation = useMutation({
+  const deleteTicket = useMutation({
     mutationFn: (id: string) => deleteOrder(id),
     onSuccess: () => {
-      Alert.alert('Success', 'Order deleted successfully');
+      setSelectedOrder(null);
+      toast.show('Order deleted successfully', {
+        type: 'success',
+      });
       refetch();
     },
     onError: (error: any) => {
@@ -53,7 +58,19 @@ const OrdersScreen = ({navigation}: any) => {
     },
   });
 
-  const handleDelete = (id: string) => {
+  const updateBooking = useMutation({
+    mutationFn: (item: any) => bookBusSeat(item.bus._id, item.selectedSeats),
+    onSuccess: () => {
+      deleteTicket.mutate(selectedOrder._id); 
+      refetch();
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error?.message || 'An error occurred');
+    },
+  });
+
+  const handleCancelTicket = (item: any) => {
+    setSelectedOrder(item);
     Alert.alert(
       'Confirm Delete',
       'Are you sure you want to delete this order?',
@@ -62,7 +79,7 @@ const OrdersScreen = ({navigation}: any) => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => deleteMutation.mutate(id),
+          onPress: () => updateBooking.mutate(item),
         },
       ],
     );
@@ -94,7 +111,7 @@ const OrdersScreen = ({navigation}: any) => {
             <View style={{alignItems: 'flex-end'}}>
               <CustomButton
                 title="Delete"
-                onPress={() => handleDelete(item._id)}
+                onPress={() => handleCancelTicket(item)}
                 color="danger"
                 size="small"
               />
@@ -107,13 +124,6 @@ const OrdersScreen = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      {/* <CustomAlert
-        visible={true}
-        title="Confirm Action"
-        message="Are you sure you want to proceed?"
-        onClose={()=>{}}
-        buttons={[]}
-      /> */}
       {loading ? (
         <ActivityIndicator size="large" color={theme.primary} />
       ) : (
@@ -126,7 +136,7 @@ const OrdersScreen = ({navigation}: any) => {
                   +new Date(b.updatedAt) - +new Date(a.updatedAt),
               )}
               renderItem={renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item._id}
             />
           ) : (
             <CustomText>No booked tickets available.</CustomText>
