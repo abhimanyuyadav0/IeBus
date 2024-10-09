@@ -7,8 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "clean": "cd android && gradlew.bat clean && cd ..",
-    "release": "cd android && gradlew.bat assembleRelease && cd ..",
+    "clean": "cd android && ./gradlew clean && cd ..",
+    "release": "cd android && ./gradlew assembleRelease && cd ..",
     "test": "jest",
     "deploy": "cd backend && npm run build && gcloud app deploy"
   },

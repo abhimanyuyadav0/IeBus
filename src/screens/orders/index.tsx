@@ -1,41 +1,47 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   FlatList,
-  TouchableNativeFeedback,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
-import { Card, Grid, GridItem } from '../../component/library';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { getOrders, deleteOrder } from '../../api/services/orders';
+import {Card, Grid, GridItem} from '../../component/library';
+import {useQuery, useMutation} from '@tanstack/react-query';
+import {getOrders, deleteOrder} from '../../api/services/orders';
+import {CustomButton} from '../../component';
+import {COLORS} from '../../constants/colors';
+import {formatDateTime} from '../../utils/dateFormater';
+import {getUser} from '../../utils/getUser';
 
-interface Order {
-  id: string;
-  name: string;
-  busName: string;
-  departure: string;
-  arrival: string;
-  price: string;
-}
+const OrdersScreen = ({navigation}: any) => {
+  const [userId, setUserId] = useState<string | null>(null);
 
-const OrdersScreen = ({ navigation }: any) => {
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUser();
+      setUserId(user._id || '670125742ccb782ab8bce842'); 
+    };
+
+    fetchUser(); 
+  }, []);
   const {
     data,
-    isLoading: loading, // `isPending` is not a valid property of useQuery, changed to `isLoading`
+    isLoading: loading,
     refetch,
-  } = useQuery<Order[]>({
+  } = useQuery<any>({
     queryKey: ['orders'],
-    queryFn: getOrders,
+    queryFn: () => getOrders(userId),
+    enabled: !!userId,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteOrder(id),  // Equivalent to the queryFn pattern
+    mutationFn: (id: string) => deleteOrder(id), 
     onSuccess: () => {
-      Alert.alert('Success', 'Order deleted successfully');
-      refetch(); // Refresh the data after deletion
+      // Alert.alert('Success', 'Order deleted successfully');
+      refetch();
     },
     onError: (error: any) => {
       Alert.alert('Error', error?.message || 'An error occurred');
@@ -46,7 +52,7 @@ const OrdersScreen = ({ navigation }: any) => {
       'Confirm Delete',
       'Are you sure you want to delete this order?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete',
           style: 'destructive',
@@ -56,26 +62,29 @@ const OrdersScreen = ({ navigation }: any) => {
     );
   };
 
-  const renderItem = ({ item }: { item: Order }) => (
+  const renderItem = ({item}: any) => (
     <Grid>
       <GridItem span={12}>
-        <Card title={item.name}>
+        <Card title={item?.name}>
           <View style={styles.ticketWrapper}>
-            <Text>{item.busName}</Text>
+            <Text>{item?.bus?.name}</Text>
             <Grid>
               <GridItem span={6}>
-                <Text>Departure: {item.departure}</Text>
+                <Text>
+                  Departure: {formatDateTime(item.bus?.departure).time}
+                </Text>
               </GridItem>
               <GridItem span={6}>
-                <Text>Arrival: {item.arrival}</Text>
+                <Text>Arrival: {formatDateTime(item.bus?.arrival).time}</Text>
               </GridItem>
             </Grid>
-            <Text>Price: {item.price}</Text>
-            <TouchableNativeFeedback onPress={() => handleDelete(item.id)}>
-              <View style={styles.deleteButton}>
-                <Text style={styles.buttonText}>Delete Ticket</Text>
-              </View>
-            </TouchableNativeFeedback>
+            <Text>Price: {item.totalPrice}</Text>
+            <CustomButton
+              title="Delete"
+              onPress={() => handleDelete(item._id)}
+              color="danger"
+              fullWidth
+            />
           </View>
         </Card>
       </GridItem>
@@ -87,18 +96,18 @@ const OrdersScreen = ({ navigation }: any) => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <View>
+        <ScrollView>
           <Text style={styles.header}>Booked Tickets</Text>
-          {data?.length ? (
+          {data?.order.length ? (
             <FlatList
-              data={data}
+              data={data?.order.sort((a: any, b: any) => new Date(b.updatedAt) - new Date(a.updatedAt))}
               renderItem={renderItem}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
             />
           ) : (
             <Text>No booked tickets available.</Text>
           )}
-        </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -119,7 +128,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     marginTop: 10,
-    backgroundColor: 'red',
+    backgroundColor: COLORS.background.danger,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',

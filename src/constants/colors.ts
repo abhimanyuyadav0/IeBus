@@ -4,6 +4,7 @@ export const COLORS = {
   background: {
     primary: '#FFFFFF',
     secondary: '#f0f0f0',
+    danger: '#ff5252',
     disabled: '#A1A1A1',
     placeholder: '#B0B0B0',
   },

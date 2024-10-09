@@ -3,6 +3,7 @@ import React from 'react';
 import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
 import {getUsers} from '../../api/services/user';
 import {Card, Grid, GridItem} from '../../component/library';
+import { ROUTES } from '../../constants/routes';
 
 const UserScreen = ({navigation}: any) => {
   const {
@@ -24,8 +25,9 @@ const UserScreen = ({navigation}: any) => {
         ) : (
           <Grid>
             {data?.users?.map((user: any) => (
-              <GridItem key={user.id} span={12}>
+              <GridItem key={user._id} span={12}>
                 <Card
+                onPress={()=>navigation.replace(ROUTES.DASHBOARD)}
                   title={
                     user.firstName || user.lastName
                       ? `${user.firstName || ''} ${user.lastName || ''}`.trim()

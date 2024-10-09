@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,44 +9,60 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
-import {ROUTES} from '../../constants/routes';
-import {Card, Grid, GridItem} from '../../component/library';
-import {useQuery} from '@tanstack/react-query'; // Import useQuery from TanStack
-import {getBuses} from '../../api/services/buses'; // Import the API function
-import {getLocations} from '../../api/services/locations';
-import {COLORS} from '../../constants/colors';
+import { ROUTES } from '../../constants/routes';
+import { Card, Grid, GridItem } from '../../component/library';
+import { useQuery } from '@tanstack/react-query';
+import { getBuses } from '../../api/services/buses';
+import { getLocations } from '../../api/services/locations';
+import { COLORS } from '../../constants/colors';
+import { formatDateTime } from '../../utils/dateFormater';
 
-const BusScreen = ({navigation}: any) => {
+const BusScreen = ({ navigation }: any) => {
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
   const [toSuggestions, setToSuggestions] = useState<string[]>([]);
 
-  // Example of provided locations
-  const allLocations = {
-    locations: [
-      {name: 'Mumbai'},
-      {name: 'Pune'},
-      {name: 'Nashik'},
-      {name: 'Lonavala'},
-      {name: 'Shambhaji Nagar'},
-    ],
-  };
-
-  // Fetch buses using TanStack Query
-  const {data, isLoading, refetch} = useQuery<any>({
-    queryKey: ['orders'],
+  // Fetch buses and locations using TanStack Query
+  const { data: busData, isLoading: loadingBuses } = useQuery<any>({
+    queryKey: ['buses'],
     queryFn: getBuses,
   });
 
+  const { data: allLocations, isLoading: loadingLocations } = useQuery<any>({
+    queryKey: ['locations'],
+    queryFn: getLocations,
+  });
+
+  // Loading state for both queries
+  if (loadingBuses || loadingLocations) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  const locationMap = allLocations.locations.reduce(
+    (acc: any, location: any) => {
+      acc[location._id] = location.name;
+      return acc;
+    },
+    {}
+  );
+
   const searchBuses = () => {
-    if (!data?.buses) return [];
-    return data.buses.filter((bus: any) => {
-      const fromMatch = bus.from.toLowerCase() === fromLocation.toLowerCase();
-      const toMatch = bus.to.toLowerCase() === toLocation.toLowerCase();
-      const isIntermediateStop = bus.stops.some(
-        (stop: any) => stop.toLowerCase() === toLocation.toLowerCase(),
+    if (!busData?.buses) return [];
+
+    return busData.buses.filter((bus: any) => {
+      const fromMatch =
+        !fromLocation ||
+        locationMap[bus.from._id]?.toLowerCase().includes(fromLocation.toLowerCase());
+
+      const toMatch =
+        !toLocation ||
+        locationMap[bus.to._id]?.toLowerCase().includes(toLocation.toLowerCase());
+
+      const isIntermediateStop = bus.stops.some((stop: any) =>
+        locationMap[stop._id]?.toLowerCase().includes(toLocation.toLowerCase())
       );
 
       return (fromMatch && toMatch) || (fromMatch && isIntermediateStop);
@@ -55,10 +71,10 @@ const BusScreen = ({navigation}: any) => {
 
   const filterSuggestions = (input: string, type: 'from' | 'to') => {
     const filtered = allLocations.locations
-      ?.filter(location =>
-        location.name.toLowerCase().includes(input.toLowerCase()),
+      .filter((location: any) =>
+        location.name.toLowerCase().includes(input.toLowerCase())
       )
-      .map(location => location.name);
+      .map((location: any) => location.name);
 
     if (type === 'from') {
       setFromSuggestions(filtered);
@@ -87,10 +103,6 @@ const BusScreen = ({navigation}: any) => {
     }
   };
 
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   const filteredBuses = searchBuses();
 
   return (
@@ -106,10 +118,9 @@ const BusScreen = ({navigation}: any) => {
         {fromSuggestions.length > 0 && (
           <FlatList
             data={fromSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'from')}>
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'from')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -126,10 +137,9 @@ const BusScreen = ({navigation}: any) => {
         {toSuggestions.length > 0 && (
           <FlatList
             data={toSuggestions}
-            keyExtractor={item => item}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => handleSuggestionSelect(item, 'to')}>
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleSuggestionSelect(item, 'to')}>
                 <Text style={styles.suggestionItem}>{item}</Text>
               </TouchableOpacity>
             )}
@@ -139,25 +149,46 @@ const BusScreen = ({navigation}: any) => {
 
         <Button title="Search" onPress={searchBuses} />
       </View>
-      <Grid>
-        {filteredBuses.map((bus: any, index: number) => (
-          <GridItem key={index} span={6}>
-            <Card title={bus.name} onPress={() => {}}>
-              <View style={styles.busItem}>
-                <Text>Departure: {bus.departure}</Text>
-                <Text>Arrival: {bus.arrival}</Text>
-                <Text>Price: {bus.price}</Text>
-                <TouchableNativeFeedback
-                  onPress={() => {
-                    navigation.navigate(ROUTES.SEATSELECTION, {bus});
-                  }}>
-                  <Text style={styles.bookButton}>Book Now</Text>
-                </TouchableNativeFeedback>
-              </View>
-            </Card>
-          </GridItem>
-        ))}
-      </Grid>
+
+      <ScrollView>
+        {filteredBuses.length > 0 ? (
+          <Grid>
+            {filteredBuses.map((bus: any, index: number) => {
+              const formattedDeparture = formatDateTime(bus.departure);
+              const formattedArrival = formatDateTime(bus.arrival);
+              return (
+                <GridItem key={index} span={12}>
+                  <Card title={bus.name} onPress={() => {}}>
+                    <View style={styles.busItem}>
+                      <Text>
+                        Departure: {formattedDeparture.date} {formattedDeparture.time}
+                      </Text>
+                      <Text>
+                        Arrival: {formattedArrival.date} {formattedArrival.time}
+                      </Text>
+                      <Text>Price: {bus.price}</Text>
+                      <Text>From: {locationMap[bus.from._id]}</Text>
+                      <Text>To: {locationMap[bus.to._id]}</Text>
+                      <Text>
+                        Stops: {bus.stops.map((stop: any) => locationMap[stop._id]).join(', ')}
+                      </Text>
+                      <TouchableNativeFeedback
+                        onPress={() => {
+                          navigation.navigate(ROUTES.BOOKING, { bus });
+                        }}
+                      >
+                        <Text style={styles.bookButton}>Book Now</Text>
+                      </TouchableNativeFeedback>
+                    </View>
+                  </Card>
+                </GridItem>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Text style={styles.header}>No Bus found</Text>
+        )}
+      </ScrollView>
     </View>
   );
 };
@@ -198,6 +229,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
+    position: 'absolute',
+    zIndex: 1,
+    width: '100%',
   },
   suggestionItem: {
     padding: 10,

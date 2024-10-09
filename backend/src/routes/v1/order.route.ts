@@ -1,27 +1,14 @@
 import { Router } from 'express';
 import {
   createNewOrder,
-  getAll,
-  getById,
-  updateById,
-  deleteById,
+  getOrderByUserId,
+  deleteOrderById,
 } from '../../controllers/order.controller';
 
 const router = Router();
 
-// GET /orders
-router.get('/', getAll);
-
-// GET /orders/:id
-router.get('/:id', getById);
-
-// POST /orders
+router.get('/:id', getOrderByUserId);
 router.post('/', createNewOrder);
+router.delete('/:id', deleteOrderById);
 
-// PATCH /orders/:id
-router.patch('/:id', updateById);
-
-// DELETE /orders/:id
-router.delete('/:id', deleteById);
-
-export { router as ordersRoute };
+export { router as orderRoute };
