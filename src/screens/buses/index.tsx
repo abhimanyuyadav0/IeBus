@@ -18,9 +18,13 @@ import {getBuses} from '../../api/services/buses';
 import {getLocations} from '../../api/services/locations';
 import {COLORS} from '../../constants/colors';
 import {formatDateTime} from '../../utils/dateFormater';
-import {CustomButton} from '../../component';
+import {CustomButton, CustomText} from '../../component';
+import { useTheme } from '../../theme';
+import { ThemeColors } from '../../theme/themeTypes';
 
 const BusScreen = ({navigation}: any) => {
+  const {theme} = useTheme(); 
+  const styles = createStyles(theme);
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [fromSuggestions, setFromSuggestions] = useState<string[]>([]);
@@ -111,7 +115,7 @@ const BusScreen = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Bus List</Text>
+      <CustomText style={styles.header}>Bus List</CustomText>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
@@ -126,7 +130,7 @@ const BusScreen = ({navigation}: any) => {
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => handleSuggestionSelect(item, 'from')}>
-                <Text style={styles.suggestionItem}>{item}</Text>
+                <CustomText style={styles.suggestionItem}>{item}</CustomText>
               </TouchableOpacity>
             )}
             style={styles.suggestionsContainer}
@@ -146,7 +150,7 @@ const BusScreen = ({navigation}: any) => {
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => handleSuggestionSelect(item, 'to')}>
-                <Text style={styles.suggestionItem}>{item}</Text>
+                <CustomText style={styles.suggestionItem}>{item}</CustomText>
               </TouchableOpacity>
             )}
             style={styles.suggestionsContainer}
@@ -166,22 +170,22 @@ const BusScreen = ({navigation}: any) => {
                 <GridItem key={index} span={12}>
                   <Card title={bus.name} onPress={() => {}}>
                     <View style={styles.busItem}>
-                      <Text>
+                      <CustomText>
                         Departure: {formattedDeparture.date}{' '}
                         {formattedDeparture.time}
-                      </Text>
-                      <Text>
+                      </CustomText>
+                      <CustomText>
                         Arrival: {formattedArrival.date} {formattedArrival.time}
-                      </Text>
-                      <Text>Price: {bus.price}</Text>
-                      <Text>From: {locationMap[bus.from._id]}</Text>
-                      <Text>To: {locationMap[bus.to._id]}</Text>
-                      <Text>
+                      </CustomText>
+                      <CustomText>Price: {bus.price}</CustomText>
+                      <CustomText>From: {locationMap[bus.from._id]}</CustomText>
+                      <CustomText>To: {locationMap[bus.to._id]}</CustomText>
+                      <CustomText>
                         Stops:{' '}
                         {bus.stops
                           .map((stop: any) => locationMap[stop._id])
                           .join(', ')}
-                      </Text>
+                      </CustomText>
                       <View style={{alignItems: 'flex-end'}}>
                         <CustomButton
                           title="Book Now"
@@ -198,17 +202,18 @@ const BusScreen = ({navigation}: any) => {
             })}
           </Grid>
         ) : (
-          <Text style={styles.header}>No Bus found</Text>
+          <CustomText style={styles.header}>No Bus found</CustomText>
         )}
       </ScrollView>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: theme.background.primary
   },
   header: {
     fontSize: 24,
@@ -220,24 +225,24 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: COLORS.secondary,
+    borderColor: theme.secondary,
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
   },
   busItem: {
-    backgroundColor: COLORS.background.secondary,
+    backgroundColor: theme.background.secondary,
     padding: 5,
     borderRadius: 5,
   },
   bookButton: {
-    color: COLORS.success,
+    color: theme.success,
     marginTop: 10,
   },
   suggestionsContainer: {
-    backgroundColor: COLORS.background.primary,
-    borderColor: COLORS.background.secondary,
+    backgroundColor: theme.background.primary,
+    borderColor: theme.background.secondary,
     borderWidth: 1,
     maxHeight: 100,
     marginBottom: 10,
@@ -248,7 +253,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.background.secondary,
+    borderBottomColor: theme.background.secondary,
   },
 });
 

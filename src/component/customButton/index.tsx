@@ -2,6 +2,7 @@ import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import {useTheme} from '../../theme';
 import {ThemeColors} from '../../theme/themeTypes';
+import CustomText from '../customText';
 
 type ButtonProps = {
   title: string;
@@ -10,6 +11,7 @@ type ButtonProps = {
   size?: 'small' | 'normal' | 'large';
   fullWidth?: boolean;
   disabled?: boolean;
+  bold?: boolean;
 };
 
 const CustomButton: React.FC<ButtonProps> = ({
@@ -19,6 +21,7 @@ const CustomButton: React.FC<ButtonProps> = ({
   size = 'normal',
   fullWidth = false,
   disabled = false,
+  bold
 }) => {
   const {theme} = useTheme();
   const styles = createStyles(theme, color, fullWidth, disabled); // Pass color to createStyles
@@ -29,7 +32,7 @@ const CustomButton: React.FC<ButtonProps> = ({
         style={[styles.button, styles[color], styles[size]]}
         onPress={onPress}
         disabled={disabled}>
-        <Text style={styles.buttonText}>{title}</Text>
+        <CustomText bold={bold} style={styles.buttonText}>{title}</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -57,13 +60,12 @@ const createStyles = (
     buttonText: {
       color:
         color === 'danger'
-          ? theme.text.secondary
+          ? theme.text.primary
           : color === 'success'
           ? theme.text.primary
           : color === 'secondary'
           ? theme.text.primary
           : theme.secondary,
-      fontWeight: 'bold',
     },
     primary: {
       backgroundColor: theme.primary,
@@ -78,8 +80,8 @@ const createStyles = (
       backgroundColor: theme.background.danger,
     },
     small: {
-      paddingVertical: 6,
-      paddingHorizontal: 12,
+      paddingVertical: 3,
+      paddingHorizontal: 6,
     },
     normal: {
       paddingVertical: 10,

@@ -1,5 +1,8 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Modal} from 'react-native';
+import React from 'react';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { useTheme } from '../../../theme';
+import { ThemeColors } from '../../../theme/themeTypes';
+import CustomText from '../../customText';
 
 interface DropdownMenuProps {
   onLogout: () => void;
@@ -7,36 +10,46 @@ interface DropdownMenuProps {
 }
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({onLogout, onProfile}) => {
+  const {theme} = useTheme(); 
+  const styles = createStyles(theme);
+  const menuItems = [
+    { label: 'User Profile', onPress: onProfile },
+    { label: 'Logout', onPress: onLogout },
+  ];
   return (
     <View style={styles.menuContainer}>
-      <TouchableOpacity style={styles.menuItem} onPress={onProfile}>
-        <Text style={styles.menuText}>User Profile</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.menuItem} onPress={onLogout}>
-        <Text style={styles.menuText}>Logout</Text>
-      </TouchableOpacity>
+      {menuItems.map((item, index) => (
+        <TouchableOpacity key={index} style={styles.menuItem} onPress={item.onPress}>
+          <CustomText style={styles.menuText}>{item.label}</CustomText>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  menuContainer: {
-    position: 'absolute',
-    top: 50, // Adjust as per the header height
-    right: 10,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    elevation: 5,
-    zIndex: 1000,
-  },
-  menuItem: {
-    paddingVertical: 10,
-  },
-  menuText: {
-    fontSize: 16,
-    color: '#007BFF',
-  },
+const createStyles = (theme: ThemeColors) => 
+  StyleSheet.create({
+    menuContainer: {
+      position: 'absolute',
+      top: 50,
+      right: 10,
+      backgroundColor: theme.background.primary,
+      padding: 10,
+      borderRadius: 5,
+      elevation: 5,
+      zIndex: 1000,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3.5,
+    },
+    menuItem: {
+      paddingVertical: 10,
+    },
+    menuText: {
+      fontSize: 16,
+      color: theme.secondary,
+    },
 });
 
 export default DropdownMenu;

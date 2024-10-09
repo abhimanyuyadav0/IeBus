@@ -21,6 +21,7 @@ export interface ThemeColors {
     disabled: string;
     placeholder: string;
   };
+  overlay:string;
   border: string;
   shadow: string;
 }

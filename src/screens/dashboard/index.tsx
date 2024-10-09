@@ -21,8 +21,8 @@ const dashboardOptions = [
 ];
 
 const Dashboard = ({navigation}: any) => {
-  const {theme} = useTheme(); // Get the current theme
-  const styles = createStyles(theme); // Create styles based on the theme
+  const {theme} = useTheme(); 
+  const styles = createStyles(theme);
 
   return (
     <View style={styles.container}>
@@ -39,7 +39,6 @@ const Dashboard = ({navigation}: any) => {
   );
 };
 
-// Create styles based on the current theme
 const createStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
