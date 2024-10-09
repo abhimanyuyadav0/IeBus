@@ -20,7 +20,20 @@ const createBus = async (payload: any) => {
     throw error;
   }
 };
-
+const bookBusSeat = async (id: any, seatIds: any) => {
+const payload={seatIds:seatIds}
+  try {
+    const {data} = await api.patch(`${apiEndPoint.bus}/${id}/book`, payload);
+    console.log('gggggggggggggggggggggggggggggggggggggg')
+    return data;
+  } catch (error: any) {
+    console.error(
+      `Error updating bus with ID ${id}:`,
+      error.message || 'Unknown error',
+    );
+    throw error;
+  }
+};
 const updateBus = async (id: any, payload: any) => {
   try {
     const {data} = await api.patch(`${apiEndPoint.bus}/${id}`, payload);
@@ -59,4 +72,4 @@ const getBusById = async (id: any) => {
     throw error;
   }
 };
-export {getBuses, createBus, updateBus, deleteBus, getBusById};
+export {getBuses, createBus, updateBus, deleteBus, getBusById, bookBusSeat};

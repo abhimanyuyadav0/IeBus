@@ -9,15 +9,6 @@ import {
 import {Grid, GridItem} from '../../../component/library';
 import {COLORS} from '../../../constants/colors';
 
-const seatData = [
-  {id: 1, seatNumber: '1A', price: 20, booked: false},
-  {id: 2, seatNumber: '1B', price: 20, booked: false},
-  {id: 3, seatNumber: '1C', price: 20, booked: true}, // Example of a booked seat
-  {id: 4, seatNumber: '2A', price: 25, booked: false},
-  {id: 5, seatNumber: '2B', price: 25, booked: false},
-  {id: 6, seatNumber: '2C', price: 25, booked: true}, // Example of a booked seat
-];
-
 const SeatSelectionScreen = ({
   route,
   selectedSeats,
@@ -32,17 +23,18 @@ const SeatSelectionScreen = ({
   };
 
   const renderSeat = ({item}: {item: any}) => (
+    
     <GridItem span={4}>
       <View style={{backgroundColor: COLORS.background.secondary}}>
         <TouchableNativeFeedback
-          onPress={() => toggleSeatSelection(item.id)}
+          onPress={() => toggleSeatSelection(item._id)}
           disabled={item.booked}>
           <View
             style={[
               styles.seat,
               item.booked
                 ? styles.booked
-                : selectedSeats.includes(item.id)
+                : selectedSeats.includes(item._id)
                 ? styles.selected
                 : styles.available,
             ]}>
@@ -61,7 +53,7 @@ const SeatSelectionScreen = ({
         <FlatList
           data={bus?.seats}
           renderItem={renderSeat}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item._id.toString()}
           numColumns={4}
           contentContainerStyle={styles.seatList}
         />

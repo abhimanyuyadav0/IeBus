@@ -8,23 +8,27 @@ import {createOrder} from '../../api/services/orders';
 import {CustomButton} from '../../component';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUser } from '../../utils/getUser';
+import { bookBusSeat } from '../../api/services/buses';
 
 const ConfirmationScreen = ({route, navigation}: any) => {
   const {bus, selectedSeats, totalPrice, passengers} = route.params;
-
   const renderSelectedSeats = () => {
-    return selectedSeats.map((seatId: number) => (
-      <Text key={seatId} style={styles.seatNumber}>
-        Seat {seatId}
-      </Text>
-    ));
+    return bus.seats
+      .filter((seat: any) => selectedSeats.includes(seat._id))
+      .map((seat: any, index: number) => (
+        <Text key={index} style={styles.seatNumber}>
+          Seat {seat.seatName}
+        </Text>
+      ));
   };
 
   const mutation = useMutation({
     mutationFn: createOrder,
-    onSuccess: () => {
-      Alert.alert('Success', 'Order created successfully!'); // Success message
-      navigation.replace(ROUTES.DASHBOARD); // Navigate to dashboard
+    onSuccess: async() => {
+      Alert.alert('Success', 'Order created successfully!'); 
+      let seatIds=selectedSeats
+      await bookBusSeat(bus._id, seatIds)
+      navigation.replace(ROUTES.DASHBOARD); 
     },
     onError: (error: any) => {
       console.error('Error creating order:', error.message || 'Unknown error');
@@ -36,9 +40,9 @@ const ConfirmationScreen = ({route, navigation}: any) => {
   });
 
   const handleDone = async () => {
-    const user = await getUser(); // Await the async function
+    const user = await getUser(); 
     const payload = {
-      userId: user ? user._id : '670125742ccb782ab8bce842',
+      user: user ? user._id : '670125742ccb782ab8bce842',
       bus: bus?._id,
       passengers: passengers?.map((passenger: any) => ({
         name: passenger.name,
@@ -47,7 +51,6 @@ const ConfirmationScreen = ({route, navigation}: any) => {
       selectedSeats,
       totalPrice,
     };
-    console.log(payload);
     mutation.mutate(payload);
   };
 

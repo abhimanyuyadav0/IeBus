@@ -3,14 +3,13 @@ import { createBus, getAllBuses, getBusById, updateBus, deleteBus, bookSeats } f
 
 export const createNewBus = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, departure, arrival, price, from, to, stops, seats } = req.body;
+    const { name, departure, arrival, price, from, to, stops = [], seats } = req.body;
 
-    // Validate required fields
     if (!name || !departure || !arrival || !price || !from || !to || !seats) {
       return res.status(400).json({ message: 'All fields are required, including seats.' });
     }
 
-    const busData = { name, departure, arrival, price, from, to, stops: stops || [], seats };
+    const busData = { name, departure, arrival, price, from, to, stops, seats };
     const newBus = await createBus(busData);
 
     res.status(201).json({ message: 'Bus created successfully', bus: newBus });
@@ -18,6 +17,7 @@ export const createNewBus = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+
 export const bookBusSeats = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { seatIds } = req.body;
@@ -37,6 +37,7 @@ export const bookBusSeats = async (req: Request, res: Response, next: NextFuncti
     next(error);
   }
 };
+
 export const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const buses = await getAllBuses();

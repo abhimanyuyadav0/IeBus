@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import {randomBytes} from 'crypto';
 import {NextFunction, Request, Response} from 'express';
 import {
   createUser,
@@ -10,8 +9,6 @@ import {
   getUserByIdV2,
   updateUser,
 } from '../services/user.services';
-import {loginOtp} from '../smsTemplates/loginOtp';
-import {sendMailSignOtp} from '../config/mailer';
 
 export const registerUser = async (
   req: Request,

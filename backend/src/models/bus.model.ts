@@ -3,9 +3,8 @@ import { Schema, model, Document } from 'mongoose';
 export interface ILocation extends Document {
   name: string;
 }
-
-export interface ISeat {
-  id: number;
+export interface ISeat extends Document { 
+  seatName: string;
   price: number;
   booked: boolean;
 }
@@ -18,11 +17,11 @@ export interface IBus extends Document {
   from: ILocation | string; 
   to: ILocation | string; 
   stops: ILocation[] | string[]; 
-  seats: ISeat[]; // Seats array added here
+  seats: ISeat[]; 
 }
 
 const seatSchema = new Schema<ISeat>({
-  id: { type: Number, required: true },
+  seatName: { type: String, required: true },
   price: { type: Number, required: true },
   booked: { type: Boolean, default: false },
 });
@@ -35,8 +34,8 @@ const busSchema = new Schema<IBus>(
     price: { type: String, required: true },
     from: { type: Schema.Types.ObjectId, ref: 'Location', required: true },
     to: { type: Schema.Types.ObjectId, ref: 'Location', required: true },
-    stops: [{ type: Schema.Types.ObjectId, ref: 'Location', required: true }],
-    seats: [seatSchema], // Seats added to bus schema
+    stops: [{ type: Schema.Types.ObjectId, ref: 'Location' }],
+    seats: [seatSchema],
   },
   { timestamps: true }
 );

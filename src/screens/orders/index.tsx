@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,21 +17,30 @@ import {formatDateTime} from '../../utils/dateFormater';
 import {getUser} from '../../utils/getUser';
 
 const OrdersScreen = ({navigation}: any) => {
-  const user: any = getUser();
-  console.log('-------------------',user,'-------------------')
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getUser();
+      setUserId(user._id || '670125742ccb782ab8bce842'); 
+    };
+
+    fetchUser(); 
+  }, []);
   const {
     data,
-    isLoading: loading, // `isPending` is not a valid property of useQuery, changed to `isLoading`
+    isLoading: loading,
     refetch,
   } = useQuery<any>({
     queryKey: ['orders'],
-    queryFn: () => getOrders(user._id || '670125742ccb782ab8bce842'),
+    queryFn: () => getOrders(userId),
+    enabled: !!userId,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteOrder(id), // Equivalent to the queryFn pattern
+    mutationFn: (id: string) => deleteOrder(id), 
     onSuccess: () => {
-      Alert.alert('Success', 'Order deleted successfully');
+      // Alert.alert('Success', 'Order deleted successfully');
       refetch();
     },
     onError: (error: any) => {
@@ -56,17 +65,17 @@ const OrdersScreen = ({navigation}: any) => {
   const renderItem = ({item}: any) => (
     <Grid>
       <GridItem span={12}>
-        <Card title={item.name}>
+        <Card title={item?.name}>
           <View style={styles.ticketWrapper}>
-            <Text>{item.bus.name}</Text>
+            <Text>{item?.bus?.name}</Text>
             <Grid>
               <GridItem span={6}>
                 <Text>
-                  Departure: {formatDateTime(item.bus.departure).time}
+                  Departure: {formatDateTime(item.bus?.departure).time}
                 </Text>
               </GridItem>
               <GridItem span={6}>
-                <Text>Arrival: {formatDateTime(item.bus.arrival).time}</Text>
+                <Text>Arrival: {formatDateTime(item.bus?.arrival).time}</Text>
               </GridItem>
             </Grid>
             <Text>Price: {item.totalPrice}</Text>
@@ -91,7 +100,7 @@ const OrdersScreen = ({navigation}: any) => {
           <Text style={styles.header}>Booked Tickets</Text>
           {data?.order.length ? (
             <FlatList
-              data={data?.order}
+              data={data?.order.sort((a: any, b: any) => new Date(b.updatedAt) - new Date(a.updatedAt))}
               renderItem={renderItem}
               keyExtractor={item => item.id}
             />
