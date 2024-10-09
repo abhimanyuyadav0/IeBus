@@ -1,5 +1,8 @@
 import React from 'react';
 import {StyleSheet, TextInput, View, Text} from 'react-native';
+import {ThemeColors} from '../../theme/themeTypes';
+import {useTheme} from '../../theme';
+import CustomText from '../customText';
 
 interface CustomTextInputProps {
   label?: string; // Optional label to show above the TextInput
@@ -8,7 +11,7 @@ interface CustomTextInputProps {
   onChangeText: (text: string) => void;
   keyboardType?: 'default' | 'numeric' | 'email-address'; // Optional, default is 'default'
   secureTextEntry?: boolean; // Optional for password fields
-  maxLength?:number
+  maxLength?: number;
 }
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
@@ -18,11 +21,13 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   onChangeText,
   keyboardType = 'default',
   secureTextEntry = false,
-  maxLength
+  maxLength,
 }) => {
+  const {theme} = useTheme();
+  const styles = createStyles(theme);
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <CustomText style={styles.label}>{label}</CustomText>}
       <TextInput
         style={styles.input}
         value={value}
@@ -36,21 +41,22 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 10,
-  },
-  label: {
-    marginBottom: 5,
-    fontWeight: 'bold',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-});
+const createStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: 10,
+    },
+    label: {
+      marginBottom: 5,
+      fontWeight: 'bold',
+    },
+    input: {
+      height: 40,
+      borderColor: 'gray',
+      borderWidth: 1,
+      borderRadius: 5,
+      paddingHorizontal: 10,
+    },
+  });
 
 export default CustomTextInput;

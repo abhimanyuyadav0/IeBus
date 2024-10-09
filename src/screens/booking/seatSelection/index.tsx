@@ -7,16 +7,14 @@ import {
   FlatList,
 } from 'react-native';
 import {Grid, GridItem} from '../../../component/library';
-import {COLORS} from '../../../constants/colors';
-import { CustomText } from '../../../component';
+import {CustomText} from '../../../component';
+import {useTheme} from '../../../theme';
+import {ThemeColors} from '../../../theme/themeTypes';
 
-const SeatSelectionScreen = ({
-  route,
-  selectedSeats,
-  setSelectedSeats,
-}: any) => {
+const SeatSelectionScreen = ({route, selectedSeats, setSelectedSeats}: any) => {
+  const {theme} = useTheme();
+  const styles = createStyles(theme);
   const {bus} = route.params;
-console.log(bus?.seats)
   const toggleSeatSelection = (id: number) => {
     setSelectedSeats((prev: number[]) =>
       prev.includes(id) ? prev.filter(seatId => seatId !== id) : [...prev, id],
@@ -24,9 +22,8 @@ console.log(bus?.seats)
   };
 
   const renderSeat = ({item}: {item: any}) => (
-    
     <GridItem span={4}>
-      <View style={{backgroundColor: COLORS.background.secondary}}>
+      <View style={{backgroundColor: 'transparent'}}>
         <TouchableNativeFeedback
           onPress={() => toggleSeatSelection(item._id)}
           disabled={item.booked}>
@@ -49,54 +46,125 @@ console.log(bus?.seats)
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Select Seats for {bus.name}</Text>
-      <Grid>
-        <FlatList
-          data={bus?.seats}
-          renderItem={renderSeat}
-          keyExtractor={item => item._id.toString()}
-          numColumns={4}
-          contentContainerStyle={styles.seatList}
-        />
-      </Grid>
+      <CustomText style={styles.header}>Select Seats for {bus.name}</CustomText>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+        }}>
+        {[1, 2].map(() => (
+          <View style={styles.busLight} />
+        ))}
+      </View>
+      <View style={styles.busWrapper}>
+        <Grid>
+          <GridItem span={6}>
+            <View style={[styles.extraSeat, styles.booked]} />
+          </GridItem>
+          <GridItem span={2}>
+            <View />
+          </GridItem>
+          <GridItem span={4}>
+            <View
+              style={{
+                flexDirection: 'column',
+                justifyContent: 'space-around',
+              }}>
+              <View style={[styles.stearRing, styles.booked]} />
+              <View style={[styles.driveSeat, styles.booked]} />
+            </View>
+          </GridItem>
+        </Grid>
+        <Grid>
+          <FlatList
+            data={bus?.seats}
+            renderItem={renderSeat}
+            keyExtractor={item => item._id.toString()}
+            numColumns={4}
+            contentContainerStyle={styles.seatList}
+          />
+        </Grid>
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  seatList: {
-    paddingBottom: 20,
-  },
-  seat: {
-    margin: 5,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  available: {
-    backgroundColor: COLORS.status.available,
-  },
-  booked: {
-    backgroundColor: COLORS.status.booked,
-  },
-  selected: {
-    backgroundColor: COLORS.status.selected,
-  },
-  seatNumber: {
-    fontSize: 12,
-  },
-  price: {
-    fontSize: 10,
-  },
-});
+const createStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 10,
+      backgroundColor: theme.background.primary,
+    },
+    header: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginVertical: 20,
+    },
+    busWrapper: {
+      borderWidth: 2,
+      borderColor: 'white',
+      borderRadius: 10,
+      overflow: 'hidden',
+    },
+    busLight: {
+      height: 20,
+      width: 20,
+      marginBottom: -3,
+      backgroundColor: theme.background.secondary,
+      borderWidth: 2,
+      borderColor: 'white',
+      borderTopStartRadius: 10,
+      borderTopEndRadius: 10,
+    },
+    seatList: {
+      paddingBottom: 20,
+    },
+    extraSeat: {
+      margin: 5,
+      height: 80,
+      borderRadius: 5,
+      paddingVertical: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    stearRing: {
+      height: 40,
+      width: 40,
+      borderRadius: 50,
+      alignSelf: 'center',
+    },
+    driveSeat: {
+      margin: 5,
+      height: 40,
+      borderRadius: 5,
+      paddingVertical: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    seat: {
+      margin: 5,
+      borderRadius: 5,
+      paddingVertical: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    available: {
+      backgroundColor: theme.status.available,
+    },
+    booked: {
+      backgroundColor: theme.status.booked,
+    },
+    selected: {
+      backgroundColor: theme.status.selected,
+    },
+    seatNumber: {
+      fontSize: 12,
+    },
+    price: {
+      fontSize: 10,
+    },
+  });
 
 export default SeatSelectionScreen;

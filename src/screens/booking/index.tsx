@@ -12,9 +12,14 @@ import {CustomButton, CustomText} from '../../component';
 import SeatSelectionScreen from './seatSelection';
 import {Card} from '../../component/library';
 import {getUser} from '../../utils/getUser';
+import { useTheme } from '../../theme';
+import { ThemeColors } from '../../theme/themeTypes';
 
 const BookingScreen = ({navigation, route}: any) => {
-  const {bus} = route.params;
+  const {bus} = route?.params;
+  // const bus = []
+  const {theme} = useTheme();
+  const styles = createStyles(theme);
   const [formData, setFormData] = useState<any[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -121,7 +126,7 @@ const BookingScreen = ({navigation, route}: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Booking for {bus.name}</Text>
+      <CustomText style={styles.header}>Booking for {bus.name}</CustomText>
 
       {formData.length > 0 ? (
         <>
@@ -129,7 +134,7 @@ const BookingScreen = ({navigation, route}: any) => {
             <Card key={index} style={styles.card}>
               {editingIndex === index ? (
                 <View>
-                  <Text>Editing Passenger {index + 1}:</Text>
+                  <CustomText>Editing Passenger {index + 1}:</CustomText>
                   <TextInput
                     style={styles.input}
                     value={newPassenger?.name}
@@ -149,24 +154,24 @@ const BookingScreen = ({navigation, route}: any) => {
                   />
                   <View style={styles.actionButtons}>
                     <TouchableOpacity onPress={() => saveChanges(index)}>
-                      <Text style={styles.saveButton}>Save</Text>
+                      <CustomText style={styles.saveButton}>Save</CustomText>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={cancelEditing}>
-                      <Text style={styles.cancelButton}>Cancel</Text>
+                      <CustomText style={styles.cancelButton}>Cancel</CustomText>
                     </TouchableOpacity>
                   </View>
                 </View>
               ) : (
                 <View>
-                  <Text>Passenger {index + 1}:</Text>
-                  <Text>Name: {person.name}</Text>
-                  <Text>Contact: {person.contact}</Text>
+                  <CustomText>Passenger {index + 1}:</CustomText>
+                  <CustomText>Name: {person.name}</CustomText>
+                  <CustomText>Contact: {person.contact}</CustomText>
                   <View style={styles.actionButtons}>
                     <TouchableOpacity onPress={() => startEditing(index)}>
-                      <Text style={styles.editButton}>Edit</Text>
+                      <CustomText style={styles.editButton}>Edit</CustomText>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => deletePassenger(index)}>
-                      <Text style={styles.deleteButton}>Delete</Text>
+                      <CustomText style={styles.deleteButton}>Delete</CustomText>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -207,7 +212,7 @@ const BookingScreen = ({navigation, route}: any) => {
 
       {editingIndex === null && newPassenger !== null && (
         <View>
-          <Text>New Passenger:</Text>
+          <CustomText>New Passenger:</CustomText>
           <TextInput
             style={styles.input}
             value={newPassenger?.name}
@@ -225,10 +230,10 @@ const BookingScreen = ({navigation, route}: any) => {
           />
           <View style={styles.actionButtons}>
             <TouchableOpacity onPress={saveNewPassenger}>
-              <Text style={styles.saveButton}>Save</Text>
+              <CustomText style={styles.saveButton}>Save</CustomText>
             </TouchableOpacity>
             <TouchableOpacity onPress={cancelEditing}>
-              <Text style={styles.cancelButton}>Cancel</Text>
+              <CustomText style={styles.cancelButton}>Cancel</CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -241,7 +246,7 @@ const BookingScreen = ({navigation, route}: any) => {
       />
 
       <View style={styles.totalContainer}>
-        <Text style={styles.totalText}>Total Price: ${getTotalPrice()}</Text>
+        <CustomText style={styles.totalText}>Total Price: ${getTotalPrice()}</CustomText>
         <CustomButton
           title="Proceed to Payment"
           onPress={handleProceedToPayment}
@@ -252,13 +257,15 @@ const BookingScreen = ({navigation, route}: any) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor:theme.background.primary
   },
   header: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
   },
