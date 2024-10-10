@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { createUser } from '../../../api/services/user';
+import { ThemeColors } from '../../../theme/themeTypes';
+import { useTheme } from '../../../theme';
+import { CustomButton, CustomText } from '../../../component';
+import { ROUTES } from '../../../constants/routes';
 
 const SignUpScreen = ({ navigation }:any) => {
+  const {theme} = useTheme();
+  const styles = createStyles(theme);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -44,7 +50,7 @@ const SignUpScreen = ({ navigation }:any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <CustomText style={styles.title}>Sign Up</CustomText>
       <TextInput
         style={styles.input}
         placeholder="First Name"
@@ -84,20 +90,26 @@ const SignUpScreen = ({ navigation }:any) => {
       ) : (
         <Button title="Sign Up" onPress={handleSignUp} />
       )}
-      <Button
-        title="Already have an account? Log In"
-        onPress={() => navigation.navigate('Login')} // Navigate to the Login screen
-        color="#007BFF"
-      />
+      <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <CustomText>Already have an account?</CustomText>
+          <CustomButton variant='text' title='Login' onPress={() => navigation.navigate(ROUTES.LOGIN)} />
+        </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 16,
+    padding: 10,
+    backgroundColor: theme.background.primary,
   },
   title: {
     fontSize: 24,

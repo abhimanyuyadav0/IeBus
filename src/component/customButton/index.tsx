@@ -5,7 +5,7 @@ import {ThemeColors} from '../../theme/themeTypes';
 import CustomText from '../customText';
 
 type ButtonProps = {
-  title: string;
+  title?: string;
   onPress?: () => void;
   color?: 'primary' | 'secondary' | 'success' | 'danger';
   size?: 'small' | 'normal' | 'large';
@@ -38,19 +38,17 @@ const CustomButton: React.FC<ButtonProps> = ({
         ]}
         onPress={onPress}
         disabled={disabled}>
-        <CustomText bold={bold} style={getTextStyle(styles, variant, color)}>
-          {title}
-        </CustomText>
+        {title && (
+          <CustomText bold={bold} style={getTextStyle(styles, variant, color)}>
+            {title}
+          </CustomText>
+        )}
       </TouchableOpacity>
     </View>
   );
 };
 
-const getButtonStyle = (
-  styles: any,
-  variant: string,
-  color: string
-) => {
+const getButtonStyle = (styles: any, variant: string, color: string) => {
   switch (variant) {
     case 'outline':
       return styles.outline;

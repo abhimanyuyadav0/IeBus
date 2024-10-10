@@ -5,13 +5,14 @@ import {
   View,
   TouchableNativeFeedback,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import {Grid, GridItem} from '../../../component/library';
 import {CustomText} from '../../../component';
 import {useTheme} from '../../../theme';
 import {ThemeColors} from '../../../theme/themeTypes';
 
-const SeatSelectionScreen = ({route, selectedSeats, setSelectedSeats}: any) => {
+const SeatSelectionScreen = ({route, selectedSeats, setSelectedSeats, formData}: any) => {
   const {theme} = useTheme();
   const styles = createStyles(theme);
   const {bus} = route.params;
@@ -26,7 +27,7 @@ const SeatSelectionScreen = ({route, selectedSeats, setSelectedSeats}: any) => {
       <View style={{backgroundColor: 'transparent'}}>
         <TouchableNativeFeedback
           onPress={() => toggleSeatSelection(item._id)}
-          disabled={item.booked}>
+          disabled={item.booked|| formData.length===selectedSeats.length}>
           <View
             style={[
               styles.seat,
@@ -47,45 +48,49 @@ const SeatSelectionScreen = ({route, selectedSeats, setSelectedSeats}: any) => {
   return (
     <View style={styles.container}>
       <CustomText style={styles.header}>Select Seats for {bus.name}</CustomText>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-        }}>
-        {[1, 2].map(() => (
-          <View style={styles.busLight} />
-        ))}
-      </View>
-      <View style={styles.busWrapper}>
-        <Grid>
-          <GridItem span={6}>
-            <View style={[styles.extraSeat, styles.booked]} />
-          </GridItem>
-          <GridItem span={2}>
-            <View />
-          </GridItem>
-          <GridItem span={4}>
-            <View
-              style={{
-                flexDirection: 'column',
-                justifyContent: 'space-around',
-              }}>
-              <View style={[styles.stearRing, styles.booked]} />
-              <View style={[styles.driveSeat, styles.booked]} />
-            </View>
-          </GridItem>
-        </Grid>
-        <Grid>
-          <FlatList
-            data={bus?.seats}
-            renderItem={renderSeat}
-            keyExtractor={item => item._id.toString()}
-            numColumns={4}
-            contentContainerStyle={styles.seatList}
-          />
-        </Grid>
-      </View>
+      <ScrollView>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}>
+          {[1, 2].map(() => (
+            <View style={styles.busLight} />
+          ))}
+        </View>
+        <View style={styles.busWrapper}>
+          <Grid>
+            <GridItem span={6}>
+              <View style={[styles.extraSeat, styles.booked]} />
+            </GridItem>
+            <GridItem span={2}>
+              <View />
+            </GridItem>
+            <GridItem span={4}>
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'space-around',
+                }}>
+                <View style={[styles.stearRing, styles.booked]} />
+                <View style={[styles.driveSeat, styles.booked]} />
+              </View>
+            </GridItem>
+          </Grid>
+          <View style={{marginTop: 10}}>
+            <Grid>
+              <FlatList
+                data={bus?.seats}
+                renderItem={renderSeat}
+                keyExtractor={item => item._id.toString()}
+                numColumns={4}
+                contentContainerStyle={styles.seatList}
+              />
+            </Grid>
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -104,8 +109,10 @@ const createStyles = (theme: ThemeColors) =>
     },
     busWrapper: {
       borderWidth: 2,
-      borderColor: 'white',
-      borderRadius: 10,
+      borderColor: theme.background.secondary,
+      borderRadius: 5,
+      borderTopRightRadius: 15,
+      borderTopLeftRadius: 15,
       overflow: 'hidden',
     },
     busLight: {

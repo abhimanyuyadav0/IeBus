@@ -6,6 +6,7 @@ import { useTheme } from '../../theme';
 import { ThemeColors } from '../../theme/themeTypes';
 import CustomText from '../customText';
 import { ROUTES } from '../../constants/routes';
+import icons from '../../assets/icons'; // Ensure this path is correct
 
 interface CustomHeaderProps {
   navigation: any;
@@ -36,7 +37,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({navigation, title, headerBac
     <View style={styles.headerContainer}>
       {headerBackVisible && navigation.canGoBack() && (
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <CustomText style={styles.backButton}>←</CustomText>
+         <icons.backButton theme={theme} width={20} height={20} />
         </TouchableOpacity>
       )}
       <Text style={styles.headerTitle}>{title}</Text>

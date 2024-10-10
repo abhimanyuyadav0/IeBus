@@ -6,9 +6,10 @@ import {Card, Grid, GridItem} from '../../component/library';
 import {ROUTES} from '../../constants/routes';
 import {useTheme} from '../../theme';
 import {ThemeColors} from '../../theme/themeTypes';
+import icons from '../../assets/icons'; // Ensure this path is correct
 
 const UserScreen = ({navigation}: any) => {
-  const {theme} = useTheme(); 
+  const {theme} = useTheme();
   const styles = createStyles(theme);
   const {
     data,
@@ -26,22 +27,29 @@ const UserScreen = ({navigation}: any) => {
         {loading ? (
           <ActivityIndicator size="large" color={theme.primary} />
         ) : isError ? (
-          <Text style={styles.errorText}>Error fetching users, please try again later.</Text>
+          <Text style={styles.errorText}>
+            Error fetching users, please try again later.
+          </Text>
         ) : (
           <Grid>
             {data?.users?.map((user: any) => (
               <GridItem key={user._id} span={12}>
-                <Card
-                  onPress={() => navigation.replace(ROUTES.DASHBOARD)}
-                  title={
-                    user.firstName || user.lastName
-                      ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
-                      : 'NA'
-                  }
-                >
-                  <View>
-                    <Text style={styles.userEmail}>{user.email}</Text>
-                  </View>
+                <Card onPress={() => navigation.replace(ROUTES.DASHBOARD)} style={{marginBottom:4}}>
+                  <Grid>
+                    <GridItem span={3}>
+                      <icons.user theme={theme} width={70} height={70} />
+                    </GridItem>
+                    <GridItem span={9}>
+                      <Text style={styles.userEmail}>
+                        {user.firstName || user.lastName
+                          ? `${user.firstName || ''} ${
+                              user.lastName || ''
+                            }`.trim()
+                          : 'NA'}
+                      </Text>
+                      <Text style={styles.userEmail}>{user.email}</Text>
+                    </GridItem>
+                  </Grid>
                 </Card>
               </GridItem>
             ))}
@@ -52,7 +60,7 @@ const UserScreen = ({navigation}: any) => {
   );
 };
 
-const createStyles = (theme: ThemeColors) =>  
+const createStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -67,6 +75,6 @@ const createStyles = (theme: ThemeColors) =>
     userEmail: {
       color: theme.text.primary,
     },
-});
+  });
 
 export default UserScreen;

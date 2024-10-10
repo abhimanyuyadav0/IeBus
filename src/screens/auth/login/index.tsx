@@ -12,22 +12,29 @@ import {
 import {useMutation, useQuery} from '@tanstack/react-query';
 import {getUsers, loginUser} from '../../../api/services/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ROUTES } from '../../../constants/routes';
+import {ROUTES} from '../../../constants/routes';
+import {ThemeColors} from '../../../theme/themeTypes';
+import {useTheme} from '../../../theme';
+import {CustomButton, CustomText} from '../../../component';
 
 interface LoginScreenProps {
   navigation: any;
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
+  const {theme} = useTheme();
+  const styles = createStyles(theme);
   const [formData, setFormData] = useState<{email: string; password: string}>({
     email: '',
     password: '',
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingUserCheck, setLoadingUserCheck] = useState(true); // Loading state
 
   useEffect(() => {
     const checkUserData = async () => {
       const userData = await AsyncStorage.getItem('userData');
+      setLoadingUserCheck(false); // Stop loading
       if (userData) {
         navigation.replace(ROUTES.DASHBOARD);
       }
@@ -39,7 +46,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     mutationFn: loginUser,
     onSuccess: async (data: any) => {
       console.log('Login complete', data);
-      await AsyncStorage.setItem('userData', JSON.stringify(data)); // Assuming the token is part of the response
+      await AsyncStorage.setItem('userData', JSON.stringify(data));
 
       setErrorMessage(null);
       navigation.replace(ROUTES.DASHBOARD);
@@ -64,10 +71,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
     }
     mutation.mutate({email, password});
   };
+
+  if (loadingUserCheck) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color={theme.primary} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Text style={styles.title}>Login</Text>
+        <CustomText style={styles.title}>Login</CustomText>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -87,46 +103,55 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         {mutation.isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <Button title="Login" onPress={handleLogin} />
+          <CustomButton title="Login" onPress={handleLogin} />
         )}
-
-        <Button
-          title="Don't have an account? Sign Up"
-          onPress={() => navigation.navigate('Signup')}
-          color="#007BFF"
-        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <CustomText>Don't have an account? </CustomText>
+          <CustomButton
+            variant="text"
+            title="Sign Up"
+            onPress={() => navigation.navigate(ROUTES.SIGNUP)}
+          />
+        </View>
       </ScrollView>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-  },
-  userContainer: {
-    marginBottom: 10,
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-});
+const createStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: 10,
+      backgroundColor: theme.background.primary,
+    },
+    title: {
+      fontSize: 24,
+      marginBottom: 24,
+      textAlign: 'center',
+    },
+    input: {
+      height: 40,
+      borderColor: '#ccc',
+      borderWidth: 1,
+      marginBottom: 12,
+      paddingHorizontal: 8,
+      borderRadius: 4,
+    },
+    userContainer: {
+      marginBottom: 10,
+    },
+    errorText: {
+      color: 'red',
+      textAlign: 'center',
+      marginBottom: 10,
+    },
+  });
 
 export default LoginScreen;
