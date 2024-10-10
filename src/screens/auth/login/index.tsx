@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ROUTES} from '../../../constants/routes';
 import {ThemeColors} from '../../../theme/themeTypes';
 import {useTheme} from '../../../theme';
-import {CustomButton, CustomText} from '../../../component';
+import {CustomButton, CustomText, CustomTextInput} from '../../../component';
 
 interface LoginScreenProps {
   navigation: any;
@@ -82,9 +82,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <View>
         <CustomText style={styles.title}>Login</CustomText>
-        <TextInput
+        <CustomTextInput
           style={styles.input}
           placeholder="Email"
           value={formData.email}
@@ -92,7 +92,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           autoCapitalize="none"
           keyboardType="email-address"
         />
-        <TextInput
+        <CustomTextInput
           style={styles.input}
           placeholder="Password"
           value={formData.password}
@@ -103,7 +103,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
         {mutation.isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
-          <CustomButton title="Login" onPress={handleLogin} />
+          <CustomButton fullWidth color='secondary' title="Login" onPress={handleLogin} />
         )}
         <View
           style={{
@@ -113,12 +113,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({navigation}) => {
           }}>
           <CustomText>Don't have an account? </CustomText>
           <CustomButton
-            variant="text"
+            variant="link"
             title="Sign Up"
             onPress={() => navigation.navigate(ROUTES.SIGNUP)}
           />
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

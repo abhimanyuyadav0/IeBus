@@ -18,7 +18,7 @@ const ThemeProvider = ({ children }:any) => {
   }, []);
 
   const currentColors: ThemeColors =
-    theme === 'dark' ? DARK_COLORS : COLORS;
+    theme === 'light' ? DARK_COLORS : COLORS;
 
   return (
     <ThemeContext.Provider value={{ theme: currentColors }}>

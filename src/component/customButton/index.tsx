@@ -125,7 +125,6 @@ const createStyles = (
     outlineText: {
       color: theme.border,
     },
-    // Text style variant
     textButton: {
       backgroundColor: 'transparent',
     },

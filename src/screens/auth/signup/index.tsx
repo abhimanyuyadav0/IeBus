@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createUser } from '../../../api/services/user';
 import { ThemeColors } from '../../../theme/themeTypes';
 import { useTheme } from '../../../theme';
-import { CustomButton, CustomText } from '../../../component';
+import { CustomButton, CustomText, CustomTextInput } from '../../../component';
 import { ROUTES } from '../../../constants/routes';
 
 const SignUpScreen = ({ navigation }:any) => {
@@ -51,19 +51,19 @@ const SignUpScreen = ({ navigation }:any) => {
   return (
     <View style={styles.container}>
       <CustomText style={styles.title}>Sign Up</CustomText>
-      <TextInput
+      <CustomTextInput
         style={styles.input}
         placeholder="First Name"
         value={formData.firstName}
         onChangeText={(value) => handleInputChange('firstName', value)}
       />
-      <TextInput
+      <CustomTextInput
         style={styles.input}
         placeholder="Last Name"
         value={formData.lastName}
         onChangeText={(value) => handleInputChange('lastName', value)}
       />
-      <TextInput
+      <CustomTextInput
         style={styles.input}
         placeholder="Email"
         value={formData.email}
@@ -71,14 +71,14 @@ const SignUpScreen = ({ navigation }:any) => {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      <TextInput
+      <CustomTextInput
         style={styles.input}
         placeholder="Password"
         value={formData.password}
         onChangeText={(value) => handleInputChange('password', value)}
         secureTextEntry
       />
-      <TextInput
+      <CustomTextInput
         style={styles.input}
         placeholder="Mobile No"
         value={formData.mobileNo}
@@ -88,7 +88,7 @@ const SignUpScreen = ({ navigation }:any) => {
       {mutation.isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <Button title="Sign Up" onPress={handleSignUp} />
+        <CustomButton title="Sign Up" onPress={handleSignUp} />
       )}
       <View
           style={{
@@ -97,7 +97,7 @@ const SignUpScreen = ({ navigation }:any) => {
             alignItems: 'center',
           }}>
           <CustomText>Already have an account?</CustomText>
-          <CustomButton variant='text' title='Login' onPress={() => navigation.navigate(ROUTES.LOGIN)} />
+          <CustomButton variant='link' color='secondary' title='Login' onPress={() => navigation.navigate(ROUTES.LOGIN)} />
         </View>
     </View>
   );

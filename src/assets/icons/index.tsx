@@ -52,28 +52,20 @@ const UsersGroupIcon = ({width = 20, height = 20, ...props}: any) => {
       fill="none"
       {...props}>
       <Circle opacity="0.4" cx="15" cy="6" r="3" fill="#1C274C" />
-      <Ellipse
-        opacity="0.4"
-        cx="16"
-        cy="17"
-        rx="5"
-        ry="3"
-        fill="#1C274C"
-      />
+      <Ellipse opacity="0.4" cx="16" cy="17" rx="5" ry="3" fill="#1C274C" />
       <Circle cx="9.00098" cy="6" r="4" fill="#1C274C" />
-      <Ellipse
-        cx="9.00098"
-        cy="17.001"
-        rx="7"
-        ry="4"
-        fill="#1C274C"
-      />
+      <Ellipse cx="9.00098" cy="17.001" rx="7" ry="4" fill="#1C274C" />
     </Svg>
   );
 };
-const BusIcon = ({ theme, ...props }: any) => {
+const BusIcon = ({theme, ...props}: any) => {
   return (
-    <Svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" {...props}>
+    <Svg
+      width="800px"
+      height="800px"
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}>
       <Path
         d="M4 10C4 6.22876 4 4.34315 5.17157 3.17157C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.17157C20 4.34315 20 6.22876 20 10V12C20 15.7712 20 17.6569 18.8284 18.8284C17.6569 20 15.7712 20 12 20C8.22876 20 6.34315 20 5.17157 18.8284C4 17.6569 4 15.7712 4 12V10Z"
         stroke="#1C274C"
@@ -157,7 +149,26 @@ const DeliveryIcon = (props: any) => (
     />
   </Svg>
 );
-
+const MenuIcon = (props: any) => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
+    <Path
+      d="M22.3 2.67H7.4c-0.99 0-1.78-0.79-1.78-1.78s0.79-1.78 1.78-1.78h14.9c0.99 0 1.78 0.79 1.78 1.78s-0.79 1.78-1.78 1.78zM22.3 21.32H7.4c-0.99 0-1.78-0.79-1.78-1.78s0.79-1.78 1.78-1.78h14.9c0.99 0 1.78 0.79 1.78 1.78s-0.79 1.78-1.78 1.78zM22.3 13.07H7.4c-0.99 0-1.78-0.79-1.78-1.78s0.79-1.78 1.78-1.78h14.9c0.99 0 1.78 0.79 1.78 1.78s-0.79 1.78-1.78 1.78z"
+      fill="#3688FF"
+    />
+    <Path
+      d="M3.56 2.67m-1.07 0a1.07 1.07 0 1 0 2.14 0 1.07 1.07 0 1 0-2.14 0Z"
+      fill="#5F6379"
+    />
+    <Path
+      d="M3.56 11.24m-1.07 0a1.07 1.07 0 1 0 2.14 0 1.07 1.07 0 1 0-2.14 0Z"
+      fill="#5F6379"
+    />
+    <Path
+      d="M3.56 19.81m-1.07 0a1.07 1.07 0 1 0 2.14 0 1.07 1.07 0 1 0-2.14 0Z"
+      fill="#5F6379"
+    />
+  </Svg>
+);
 const withDefaultSize = (
   Component: React.FC<any>,
   defaultSize: number = 20,
@@ -175,13 +186,14 @@ const BackButtonWithDefaultSize = withDefaultSize(BackButton);
 const UsersGroupIconWithDefaultSize = withDefaultSize(UsersGroupIcon);
 const BusIconIconWithDefaultSize = withDefaultSize(BusIcon);
 const DeliveryIconWithDefaultSize = withDefaultSize(DeliveryIcon);
+const MenuIconWithDefaultSize = withDefaultSize(MenuIcon);
 const icons = {
   user: UserIconWithDefaultSize,
   backButton: BackButtonWithDefaultSize,
   usersGroup: UsersGroupIconWithDefaultSize,
-  busIcon:BusIconIconWithDefaultSize,
-  deliveryIcon:DeliveryIconWithDefaultSize,
-  orderIcon:DeliveryIconWithDefaultSize,
+  busIcon: BusIconIconWithDefaultSize,
+  orderIcon: DeliveryIconWithDefaultSize,
+  menuIcon: MenuIconWithDefaultSize,
 };
 
 export default icons;

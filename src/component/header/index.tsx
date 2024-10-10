@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropdownMenu from './menuDropdown';
-import { useTheme } from '../../theme';
-import { ThemeColors } from '../../theme/themeTypes';
+import {useTheme} from '../../theme';
+import {ThemeColors} from '../../theme/themeTypes';
 import CustomText from '../customText';
-import { ROUTES } from '../../constants/routes';
+import {ROUTES} from '../../constants/routes';
 import icons from '../../assets/icons'; // Ensure this path is correct
 
 interface CustomHeaderProps {
@@ -14,8 +14,12 @@ interface CustomHeaderProps {
   headerBackVisible: boolean;
 }
 
-const CustomHeader: React.FC<CustomHeaderProps> = ({navigation, title, headerBackVisible}) => {
-  const {theme} = useTheme(); 
+const CustomHeader: React.FC<CustomHeaderProps> = ({
+  navigation,
+  title,
+  headerBackVisible,
+}) => {
+  const {theme} = useTheme();
   const styles = createStyles(theme);
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -37,12 +41,12 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({navigation, title, headerBac
     <View style={styles.headerContainer}>
       {headerBackVisible && navigation.canGoBack() && (
         <TouchableOpacity onPress={() => navigation.goBack()}>
-         <icons.backButton theme={theme} width={20} height={20} />
+          <icons.backButton theme={theme} width={20} height={20} />
         </TouchableOpacity>
       )}
       <Text style={styles.headerTitle}>{title}</Text>
       <TouchableOpacity onPress={toggleMenu}>
-        <CustomText style={styles.hamburger}>☰</CustomText>
+        <icons.menuIcon theme={theme} width={25} height={20} />
       </TouchableOpacity>
       {menuVisible && (
         <DropdownMenu onLogout={handleLogout} onProfile={handleProfile} />
@@ -51,7 +55,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({navigation, title, headerBac
   );
 };
 
-const createStyles = (theme: ThemeColors) =>  
+const createStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     headerContainer: {
       flexDirection: 'row',
@@ -62,7 +66,7 @@ const createStyles = (theme: ThemeColors) =>
       backgroundColor: theme.background.primary,
       elevation: 5,
       shadowColor: theme.shadow,
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: {width: 0, height: 2},
       shadowOpacity: 0.2,
       shadowRadius: 3.5,
     },
@@ -81,6 +85,6 @@ const createStyles = (theme: ThemeColors) =>
       flex: 1,
       textAlign: 'center',
     },
-});
+  });
 
 export default CustomHeader;

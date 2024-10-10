@@ -18,6 +18,32 @@ import {ThemeColors} from '../../theme/themeTypes';
 import {useMutation} from '@tanstack/react-query';
 import {getBusById} from '../../api/services/buses';
 
+const deepEqual = (obj1: any, obj2: any): boolean => {
+  if (obj1 === obj2) return true;
+
+  if (
+    typeof obj1 !== 'object' ||
+    typeof obj2 !== 'object' ||
+    obj1 === null ||
+    obj2 === null
+  ) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 const BookingScreen = ({navigation, route}: any) => {
   const {bus} = route?.params;
 
@@ -45,7 +71,7 @@ const BookingScreen = ({navigation, route}: any) => {
   const {mutate: fetchBusData} = useMutation({
     mutationFn: () => getBusById(bus._id),
     onSuccess: data => {
-      if (JSON.stringify(data) !== JSON.stringify(bus)) {
+      if (!deepEqual(data.bus, busData)) {
         setBusData(data.bus);
       }
     },
@@ -61,7 +87,7 @@ const BookingScreen = ({navigation, route}: any) => {
 
     return () => clearInterval(intervalId);
   }, [fetchBusData]);
-  console.log('busData--------------------', busData, '-----------busData');
+
   const handleNewPassengerInputChange = (name: string, value: string) => {
     setNewPassenger((prev: any) => ({...prev, [name]: value}));
   };
@@ -108,12 +134,13 @@ const BookingScreen = ({navigation, route}: any) => {
 
   const getTotalPrice = () => {
     return selectedSeats.reduce((total, seatId) => {
-      const seat = bus.seats.find((s: any) => s._id === seatId);
+      const seat = busData?.seats?.find((s: any) => s._id === seatId);
       return total + (seat ? seat.price : 0);
     }, 0);
   };
+
   const assignRandomSeats = () => {
-    const availableSeats = bus.seats.filter(
+    const availableSeats = busData?.seats?.filter(
       (seat: any) => !selectedSeats.includes(seat._id) && !seat.booked,
     );
     const requiredSeats = formData.length - selectedSeats.length;
@@ -142,16 +169,15 @@ const BookingScreen = ({navigation, route}: any) => {
     }
     navigation.navigate(ROUTES.PAYMENT, {
       selectedSeats,
-      bus,
+      bus: busData,
       totalPrice,
       passengers: formData,
     });
   };
-  console.log(selectedSeats);
 
   return (
     <View style={styles.container}>
-      <CustomText style={styles.header}>Booking for {bus.name}</CustomText>
+      <CustomText style={styles.header}>Booking for {busData?.name}</CustomText>
 
       <ScrollView>
         {formData.length > 0 ? (
@@ -280,7 +306,7 @@ const BookingScreen = ({navigation, route}: any) => {
         )}
 
         <SeatSelectionScreen
-          route={{params: {bus}}}
+          route={{params: {bus: busData}}}
           selectedSeats={selectedSeats}
           setSelectedSeats={setSelectedSeats}
           formData={formData}

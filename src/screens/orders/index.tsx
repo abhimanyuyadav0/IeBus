@@ -85,6 +85,12 @@ const OrdersScreen = ({navigation}: any) => {
     );
   };
 
+  const filterSelectedSeats = (orderData: any) => {
+    const { bus, selectedSeats } = orderData;
+    
+    // Filter the seats that are available in selectedSeats
+    return bus.seats.filter(seat => selectedSeats.includes(seat._id));
+  };
   const renderItem = ({item}: any) => (
     <Grid>
       <GridItem span={12}>
@@ -105,6 +111,11 @@ const OrdersScreen = ({navigation}: any) => {
               <GridItem span={6}>
                 <CustomText color="secondary">
                   Price: {item.totalPrice}
+                </CustomText>
+              </GridItem>
+              <GridItem span={6}>
+                <CustomText color="secondary">
+                  {filterSelectedSeats(item).map(seat => seat.seatName).join(', ')}
                 </CustomText>
               </GridItem>
             </Grid>
